@@ -15,12 +15,12 @@ create table Reservations(
    foreign key (hostel_id) references Hostels(id)
 );
 
-create table Rooms (
+create table Bed (
    room_number integer not null,
+   bed_number integer not null,
    hostel_id integer not null,
-   number_beds integer not null,
    foreign key (hostel_id) references Hostels(id),
-   primary key (room_number, hostel_id)
+   primary key (room_number, bed_number, hostel_id)
 );
 
 create table Admin (
