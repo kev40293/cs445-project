@@ -1,10 +1,8 @@
 <?php
 require_once("Hostel.php");
-
-// Don't need most of the variables,
-// most of it should be in SQL
-class Room {
+class Bed {
    protected $hostel;
+   protected $bed_number;
    protected $room_number;
    protected $number_beds;
    protected $rate;
@@ -15,11 +13,11 @@ class Room {
       $room_number = $room_num;
    }
 
-   public function book_room() {
+   public function book_bed() {
       $availability = false;
    }
 
-   public function free_room() {
+   public function free_bed() {
       $availability = true;
    }
 
