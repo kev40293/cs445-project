@@ -16,8 +16,8 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testNoAvailabilities() {
-      $this->bed_one->book_bed();
-      $this->bed_two->book_bed();
+      $this->bed_one->book();
+      $this->bed_two->book();
 
       $avail = $this->hostel->get_available_rooms();
       $this->assertEquals(sizeof($avail), 0);
@@ -25,7 +25,7 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testReturnAvailable() {
-      $this->bed_one->book_bed();
+      $this->bed_one->book();
 
       $avail = $this->hostel->get_available_rooms();
       $this->assertEquals(sizeof($avail), 1);

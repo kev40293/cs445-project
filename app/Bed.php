@@ -9,11 +9,11 @@ class Bed {
       $this->room_number = $room_num;
    }
 
-   public function book_bed() {
+   public function book() {
       $this->isAvailable = false;
    }
 
-   public function free_bed() {
+   public function free() {
       $this->isAvailable = true;
    }
 

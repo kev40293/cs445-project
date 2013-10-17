@@ -14,13 +14,13 @@ class BedFunctionsTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testBooking() {
-      $this->bed->book_bed();
+      $this->bed->book();
       $this->assertFalse($this->bed->is_free());
    }
 
    public function testFreeBed() {
-      $this->bed->book_bed();
-      $this->bed->free_bed();
+      $this->bed->book();
+      $this->bed->free();
       $this->assertTrue($this->bed->is_free());
    }
 }
