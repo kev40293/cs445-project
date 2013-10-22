@@ -1,0 +1,5 @@
+pear config-set auto_discover 1
+pear install pear.phpunit.de/PHP_CodeCoverage
+pear install phpunit/PHPunit
+pear install PHPUnit
+apt-get install phpunit
