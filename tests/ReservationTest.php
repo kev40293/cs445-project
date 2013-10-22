@@ -5,9 +5,15 @@ require_once("../app/Reservation.php");
 class MakeReservationTest extends PHPUnit_Framework_TestCase {
    protected $customer;
    protected $reservation;
+   protected $date1 = "20131010";
+   protected $bed1;
+   protected $bed2;
+
    public function setUp(){
       $this->customer = new Customer();
       $this->reservation = new Reservation($this->customer);
+      $this->bed1 = new Bed(1, array($this->date1));
+      $this->bed2 = new Bed(2, array($this->date1));
    }
 
    public function testEmptyReservation() {
@@ -16,47 +22,40 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testAddBed() {
-      $bed = new Bed(1);
-      $this->reservation->add_bed($bed);
+      $this->reservation->add_bed($this->bed1, $this->date1);
 
-      $this->assertFalse($bed->is_free());
+      $this->assertFalse($this->bed1->is_free($this->date1));
       $rbeds = $this->reservation->get_beds();
-      $this->assertEquals($rbeds[0], $bed);
+      $this->assertEquals($rbeds[$this->date1][0], $this->bed1);
       $this->assertEquals(sizeof($rbeds), 1);
    }
 
    public function testAddMoreBeds() {
-      $bed = new Bed(1);
-      $bed2 = new Bed(2);
-      $this->reservation->add_bed($bed);
-      $this->reservation->add_bed($bed2);
+      $this->reservation->add_bed($this->bed1, $this->date1);
+      $this->reservation->add_bed($this->bed2, $this->date1);
 
-      $this->assertFalse($bed->is_free());
+      $this->assertFalse($this->bed1->is_free($this->date1));
       $rbeds = $this->reservation->get_beds();
-      $this->assertGreaterThan(1, sizeof($rbeds));
+      print sizeof($rbeds);
+      $this->assertEquals(2, sizeof($rbeds[$this->date1]));
    }
 
    public function testAddBookedBed() {
-      $bed = new Bed(1);
-      $bed->book();
+      $this->bed1->book($this->date1);
       $this->setExpectedException('InvalidArgumentException');
-      $this->reservation->add_bed($bed);
+      $this->reservation->add_bed($this->bed1, $this->date1);
    }
 
    public function testCancel() {
-      $bed = new Bed(1);
-      $bed2 = new Bed(2);
-      $this->reservation->add_bed($bed);
-      $this->reservation->add_bed($bed2);
+      $this->reservation->add_bed($this->bed1, $this->date1);
+      $this->reservation->add_bed($this->bed2, $this->date1);
 
       $this->reservation->cancel();
-      $this->assertTrue($bed->is_free());
-      $this->assertTrue($bed2->is_free());
+      $this->assertTrue($this->bed1->is_free($this->date1));
+      $this->assertTrue($this->bed2->is_free($this->date1));
+      $rbeds = $this->reservation->get_beds();
+      $this->assertEquals(0, sizeof($rbeds));
    }
-
-}
-
-class CancelReservationTest extends PHPUnit_Framework_TestCase {
 
 }
 
