@@ -46,8 +46,13 @@ class Bed {
       return $free;
    }
 
-   public function is_free($date) {
-      return $this->availabilities[$date];
+   public function is_free($date, $numdays = 1) {
+      $dates = BookingDate::date_range($date, $numdays);
+      foreach ($dates as $d) {
+         if (! $this->availabilities[$d])
+            return false;
+      }
+      return true;
    }
 
    public function get_rate() {

@@ -3,8 +3,8 @@
       <testsuite name="cs445">
          <file>BookingDateTest.php</file>
          <file>BedTest.php</file>
-         <file>HostelTest.php</file>
          <file>ReservationTest.php</file>
+         <file>HostelTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

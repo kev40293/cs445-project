@@ -12,7 +12,7 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    protected $bed_two;
 
    protected function setUp(){
-      $this->date1 = "10102013";
+      $this->date1 = "20131010";
       $this->rate1 = "25";
       $this->init_dates = array($this->date1);
       $this->bed_one = new Bed(1, $this->init_dates, $this->rate1);

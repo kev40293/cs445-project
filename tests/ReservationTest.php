@@ -24,7 +24,7 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testAddBed() {
-      $this->reservation->add_bed($this->bed1, $this->date1, 1);
+      $this->reservation->add_bed($this->bed1, $this->date1);
 
       $this->assertFalse($this->bed1->is_free($this->date1));
       $rbeds = $this->reservation->get_bookings();
@@ -33,8 +33,8 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testAddMoreBeds() {
-      $this->reservation->add_bed($this->bed1, $this->date1, 1);
-      $this->reservation->add_bed($this->bed2, $this->date1, 1);
+      $this->reservation->add_bed($this->bed1, $this->date1);
+      $this->reservation->add_bed($this->bed2, $this->date1);
 
       $this->assertFalse($this->bed1->is_free($this->date1));
       $rbeds = $this->reservation->get_bookings();
@@ -44,12 +44,12 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
    public function testAddBookedBed() {
       $this->bed1->book($this->date1);
       $this->setExpectedException('IllegalBookingException');
-      $this->reservation->add_bed($this->bed1, $this->date1, 1);
+      $this->reservation->add_bed($this->bed1, $this->date1);
    }
 
    public function testCancel() {
-      $this->reservation->add_bed($this->bed1, $this->date1, 1);
-      $this->reservation->add_bed($this->bed2, $this->date1, 1);
+      $this->reservation->add_bed($this->bed1, $this->date1);
+      $this->reservation->add_bed($this->bed2, $this->date1);
 
       $this->reservation->cancel();
       $this->assertTrue($this->bed1->is_free($this->date1));
@@ -64,16 +64,16 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testCalculateCostTwoBeds() {
-      $this->reservation->add_bed($this->bed1, $this->date1, 1);
-      $this->reservation->add_bed($this->bed2, $this->date1, 1);
+      $this->reservation->add_bed($this->bed1, $this->date1);
+      $this->reservation->add_bed($this->bed2, $this->date1);
       $cost = $this->reservation->calculate_cost();
       $this->assertEquals(75, $cost);
    }
 
    public function testCalculateCostTwoDays() {
-      $this->reservation->add_bed($this->bed1, $this->date1, 1);
+      $this->reservation->add_bed($this->bed1, $this->date1);
       $this->bed1->add_dates(array(20131011));
-      $this->reservation->add_bed($this->bed1, "20131011", 1);
+      $this->reservation->add_bed($this->bed1, "20131011");
       $cost = $this->reservation->calculate_cost();
       $this->assertEquals(50, $cost);
    }

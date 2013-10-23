@@ -14,11 +14,10 @@ class Hostel {
       $this->beds = $bed_list;
    }
 
-   // we should replace rooms and just use the database schema
-   public function get_available_beds($date) {
+   public function get_available_beds($date, $numdays = 1) {
       $free_beds = array();
       foreach ($this->beds as $bed) {
-         if ($bed->is_free($date)){
+         if ($bed->is_free($date, $numdays)){
             array_push($free_beds, $bed);
          }
       }

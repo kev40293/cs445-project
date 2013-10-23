@@ -10,7 +10,7 @@ class Reservation {
       $this->customer = $cust;
    }
 
-   public function add_bed($bed, $start_date, $num_days) {
+   public function add_bed($bed, $start_date, $num_days = 1) {
       $dates = BookingDate::date_range($start_date, $num_days);
       foreach ($dates as $date){
          $bed->book($date);
