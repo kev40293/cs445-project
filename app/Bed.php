@@ -26,11 +26,11 @@ class Bed {
          throw new IllegalBookingException();
    }
 
-   public function book_range($sdate, $edate) {
-      foreach (BookingDate::date_range($sdate, $edate) as $date){
-         $this->book($date);
-      }
-   }
+   //public function book_range($sdate, $edate) {
+   //   foreach (BookingDate::date_range($sdate, $edate) as $date){
+   //      $this->book($date);
+   //   }
+   //}
 
    public function free($date) {
       $this->availabilities[$date] = true;

@@ -40,14 +40,14 @@ class BedFunctionsTest extends PHPUnit_Framework_TestCase {
       $this->bed->book($this->date1);
    }
 
-   public function testBookRange() {
-      $range = BookingDate::date_range($this->date1, $this->date2);
-      $this->bed->book_range($this->date1, $this->date2);
+   //public function testBookRange() {
+   //   $range = BookingDate::date_range($this->date1, $this->date2);
+   //   $this->bed->book_range($this->date1, $this->date2);
 
-      foreach ($range as $date) {
-         $this->assertFalse($this->bed->is_free($date));
-      }
-   }
+   //   foreach ($range as $date) {
+   //      $this->assertFalse($this->bed->is_free($date));
+   //   }
+   //}
 }
 
 ?>

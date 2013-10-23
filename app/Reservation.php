@@ -1,6 +1,7 @@
 <?php
 require_once("Bed.php");
 require_once("Customer.php");
+require_once("Date.php");
 class Reservation {
    protected $beds = array();
    protected $customer;
@@ -9,13 +10,12 @@ class Reservation {
       $this->customer = $cust;
    }
 
-   public function add_bed($bed, $date) {
-      if ($bed->is_free($date)){
+   public function add_bed($bed, $start_date, $num_days) {
+      $dates = BookingDate::date_range($start_date, $num_days);
+      foreach ($dates as $date){
          $bed->book($date);
          $this->beds[$date][] = $bed;
       }
-      else
-         throw new InvalidArgumentException("Bed not free");
    }
 
    public function get_bookings() {
