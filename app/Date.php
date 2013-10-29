@@ -7,7 +7,7 @@ class BookingDate {
       $a = new DateTime($start, new DateTimeZone('UTC'));
 
       while ($a->format('Ymd') <= $end) {
-         $range[] = $a;
+         $range[] = $a->format('Ymd');
          $a->add(new DateInterval('P1D'));
       }
 
