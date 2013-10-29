@@ -29,7 +29,8 @@ class MemoryDatabase implements DatabaseInterface {
       $hst = array();
       $results = array();
       if (exists($parameters["city"])) {
-         // get appropriate hostel
+         foreach ($this->hostels as $host) {
+         }
       }
       else {
          $hst = $this->hostels;

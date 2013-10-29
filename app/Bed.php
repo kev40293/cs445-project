@@ -46,8 +46,11 @@ class Bed {
       return $free;
    }
 
-   public function is_free($date, $numdays = 1) {
-      $dates = BookingDate::date_range($date, $numdays);
+   public function is_free($date, $enddate = null) {
+      if ($enddate == null) {
+         $enddate = $date;
+      }
+      $dates = BookingDate::dates_from_range($date, $enddate);
       foreach ($dates as $d) {
          if (! $this->availabilities[$d])
             return false;

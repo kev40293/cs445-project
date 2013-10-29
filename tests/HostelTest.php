@@ -6,6 +6,7 @@ require_once("../app/Hostel.php");
 class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    protected $hostel;
    protected $date1;
+   protected $date2;
    protected $rate1;
    protected $init_dates;
    protected $bed_one;
@@ -13,8 +14,9 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
 
    protected function setUp(){
       $this->date1 = "20131010";
+      $this->date2 = "20131011";
       $this->rate1 = "25";
-      $this->init_dates = array($this->date1);
+      $this->init_dates = array($this->date1, $this->date2);
       $this->bed_one = new Bed(1, $this->init_dates, $this->rate1);
       $this->bed_two = new Bed(2, $this->init_dates, $this->rate1);
 
@@ -41,6 +43,19 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    public function testMultipleAvailable() {
       $avail = $this->hostel->get_available_beds($this->date1);
       $this->assertGreaterThan(1, sizeof($avail));
+   }
+
+   public function testMultipleDates() {
+      $avail = $this->hostel->get_available_beds($this->date1, $this->date2);
+      $this->assertGreaterThan(1, sizeof($avail));
+   }
+
+   public function testMultipleDatesSomeBooked() {
+      $avail = $this->hostel->get_available_beds($this->date1, $this->date2);
+      $origCount = sizeof($avail);
+      $this->bed_two->book($this->date2);
+      $avail = $this->hostel->get_available_beds($this->date1, $this->date2);
+      $this->assertEquals($origCount -1, sizeof($avail));
    }
 
 }

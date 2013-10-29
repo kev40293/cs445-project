@@ -14,10 +14,13 @@ class Hostel {
       $this->beds = $bed_list;
    }
 
-   public function get_available_beds($date, $numdays = 1) {
+   public function get_available_beds($date, $enddate = null) {
+      if ($enddate == null) {
+         $enddate = $date;
+      }
       $free_beds = array();
       foreach ($this->beds as $bed) {
-         if ($bed->is_free($date, $numdays)){
+         if ($bed->is_free($date, $enddate)){
             array_push($free_beds, $bed);
          }
       }
