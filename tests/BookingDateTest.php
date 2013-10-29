@@ -21,4 +21,20 @@ class DateTest extends PHPUnit_Framework_TestCase {
       $array = BookingDate::date_range('20131111', -4);
    }
 
+   public function testNumDaysOne() {
+      $this->assertEquals(1, BookingDate::get_num_days("20131010", "20131010"));
+   }
+
+   public function testNumDaysMore() {
+      $this->assertEquals(11, BookingDate::get_num_days("20131010", "20131020"));
+   }
+
+   public function testNumDaysBorder() {
+      $this->assertEquals(2, BookingDate::get_num_days("20131031", "20131101"));
+   }
+
+   public function testNumDaysBadRange () {
+      $this->assertEquals(0, BookingDate::get_num_days("20131031", "20131001"));
+   }
+
 }

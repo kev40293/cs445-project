@@ -16,6 +16,18 @@ class BookingDate {
       return $range;
    }
 
+   public static function get_num_days($start, $end){
+      $num = 0;
+      $a = new DateTime($start, new DateTimeZone('UTC'));
+
+      while ($a->format('Ymd') <= $end) {
+         $a->add(new DateInterval('P1D'));
+         $num++;
+      }
+
+      return $num;
+   }
+
 }
 
 ?>
