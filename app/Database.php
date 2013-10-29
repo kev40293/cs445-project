@@ -14,29 +14,32 @@ require_once("Reservation.php");
 
 class MemoryDatabase implements DatabaseInterface {
    protected $hostels;
-   protected $beds;
    protected $reservations;
    protected $customer;
 
    // fix the constructor to read from the XML file
-   public function __construct($init_beds) {
-      $this->beds = $init_beds;
+   public function __construct($xml_file) {
       $this->reservations = array();
       $this->customers = array();
+      $this->hostels = array();
    }
    // City, start date, end date/numdays
-   public function search_beds($parameters) {
+   public function search_beds($args) {
       $hst = array();
       $results = array();
-      if (exists($parameters["city"])) {
+      if (exists($args["city"])) {
          foreach ($this->hostels as $host) {
+            if ($host->getCity() == $args["city"]) {
+               $hst[] = $host;
+            }
          }
       }
       else {
          $hst = $this->hostels;
       }
       foreach ($hst as $host) {
-         // append available beds
+         $res = $host->get_available_beds($args["start_date"], $args["end_date"]);
+         array_merge($results, $res);
       }
       return $results;
    }
