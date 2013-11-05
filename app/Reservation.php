@@ -3,11 +3,13 @@ require_once("Bed.php");
 require_once("Customer.php");
 require_once("Date.php");
 class Reservation {
+   protected $res_id;
    protected $beds = array();
    protected $customer;
 
-   public function __construct($cust) {
+   public function __construct($id, $cust) {
       $this->customer = $cust;
+      $this->res_id = $id;
    }
 
    public function add_bed($bed, $start_date, $num_days = 1) {
