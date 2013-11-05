@@ -27,6 +27,19 @@ class MemoryDatabase implements DatabaseInterface {
 
    public function load_from_xml($xml_file) {
       $dom = simplexml_load_file($xml_file);
+      $hostel = get_hostel_by_name($dom->name);
+      if ($hostel == null) {
+         // create the hostel struct
+      }
+   }
+
+   public function get_hostel_by_name($name) {
+      for ($this->hostels as $h) {
+         if ($h->get_name() == $name) {
+            return $h;
+         }
+      }
+      return null;
    }
 
    // City, start date, end date/numdays
