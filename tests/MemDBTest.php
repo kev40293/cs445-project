@@ -11,6 +11,10 @@ class MemDBTest extends PHPUnit_Framework_TestCase {
    public function testCreate() {
       $this->assertInstanceOf('MemoryDatabase', $this->db);
    }
+   public function testSearchEmpty() {
+      $res = $this->db->search_beds(array());
+      $this->assertEmpty($res);
+   }
 
 }
 

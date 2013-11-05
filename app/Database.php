@@ -22,12 +22,18 @@ class MemoryDatabase implements DatabaseInterface {
       $this->reservations = array();
       $this->customers = array();
       $this->hostels = array();
+      $this->load_from_xml($xml_file);
    }
+
+   public function load_from_xml($xml_file) {
+      $dom = simplexml_load_file($xml_file);
+   }
+
    // City, start date, end date/numdays
    public function search_beds($args) {
       $hst = array();
       $results = array();
-      if (exists($args["city"])) {
+      if (isset ($args["city"])) {
          foreach ($this->hostels as $host) {
             if ($host->getCity() == $args["city"]) {
                $hst[] = $host;
