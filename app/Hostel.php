@@ -10,8 +10,11 @@ class Hostel {
    protected $availabilities;
    protected $beds = array();
 
-   public function __construct($bed_list) {
-      $this->beds = $bed_list;
+   public function __construct($n, $add, $cont, $rest) {
+      $this->name = $n;
+      $this->address = $add;
+      $this->contact = $cont;
+      $this->restrictions = $rest;
    }
 
    public function get_available_beds($date, $enddate = null) {
@@ -25,6 +28,9 @@ class Hostel {
          }
       }
       return $free_beds;;
+   }
+
+   public function add_availability() {
    }
 
    public function search() {
