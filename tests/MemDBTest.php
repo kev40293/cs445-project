@@ -12,6 +12,10 @@ class MemDBTest extends PHPUnit_Framework_TestCase {
       $this->assertInstanceOf('MemoryDatabase', $this->db);
    }
 
+   public function testAddFromXML() {
+      $this->db->add_hostel_from_xml("hostel-20130818.xml");
+   }
+
 }
 
 ?>

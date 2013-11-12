@@ -58,6 +58,31 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals($origCount -1, sizeof($avail));
    }
 
+   public function testAddAvailability() {
+      $this->hostel->add_availability($this->date1, 1, 1, 25);
+      $avail = $this->hostel->get_availabilities($this->date1);
+      $this->assertEquals(1, sizeof($avail));
+   }
+
+   public function testGetAvailabilitiesNone() {
+      $this->hostel->add_availability($this->date1, 1, 1, 25);
+      $avail = $this->hostel->get_availabilities($this->date2);
+      $this->assertEquals(0, sizeof($avail));
+   }
+
+   public function testGetAvailabilitiesNotEnoughSpace() {
+      $this->hostel->add_availability($this->date1, 1, 1, 25);
+      $avail = $this->hostel->get_availabilities($this->date1, $num = 2);
+      $this->assertEquals(0, sizeof($avail));
+   }
+
+   public function testAddAvailabilityRange() {
+      foreach (array($this->date1, $this->date2) as $d) {
+         $this->hostel->add_availability($d, 1, 1, 25);
+      }
+      $avail = $this->hostel->get_availabilities($this->date1, $this->date2);
+      $this->assertEquals(1, sizeof($avail));
+   }
 }
 
 ?>

@@ -1,6 +1,7 @@
 <?php
 
 require_once("Bed.php");
+require_once("Availability.php");
 
 class Hostel {
    protected $name;
@@ -10,8 +11,9 @@ class Hostel {
    protected $availabilities;
    protected $beds = array();
 
-   public function __construct($bed_list) {
+   public function __construct($bed_list = array()) {
       $this->beds = $bed_list;
+      $this->availabilities = array();
    }
 
    public function get_available_beds($date, $enddate = null) {
@@ -27,7 +29,28 @@ class Hostel {
       return $free_beds;;
    }
 
-   public function search() {
+   public function get_availabilities($date, $enddate = null, $num = 1) {
+      if ($enddate == null) {
+         $enddate = $date;
+      }
+      $results = array();
+      $rooms = array();
+      foreach (BookingDate::dates_from_range($date, $enddate) as $d) {
+         if (isset($this->availabilities[$d])) {
+            foreach($this->availabilities[$d] as $av) {
+               if ($av->free_space() >= $num)
+                  $rooms[$av->room()][] = $av;
+            }
+         }
+         else
+            return array();
+      }
+      return $this->availabilities[$date];
+   }
+
+   public function add_availability($date, $room, $nbeds, $price) {
+      $this->availabilities[$date] =
+         new Availability($room, $date, $nbeds, $price);
    }
 
 }
