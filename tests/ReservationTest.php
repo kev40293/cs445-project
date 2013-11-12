@@ -13,7 +13,7 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
 
    public function setUp(){
       $this->customer = new Customer();
-      $this->reservation = new Reservation($this->customer);
+      $this->reservation = new Reservation(1, $this->customer);
       $this->bed1 = new Bed(1, array($this->date1), $this->rate1);
       $this->bed2 = new Bed(2, array($this->date1), $this->rate2);
    }

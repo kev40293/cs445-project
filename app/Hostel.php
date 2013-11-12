@@ -11,9 +11,11 @@ class Hostel {
    protected $availabilities;
    protected $beds = array();
 
-   public function __construct($bed_list = array()) {
-      $this->beds = $bed_list;
-      $this->availabilities = array();
+   public function __construct($n, $add, $cont, $rest) {
+      $this->name = $n;
+      $this->address = $add;
+      $this->contact = $cont;
+      $this->restrictions = $rest;
    }
 
    public function get_available_beds($date, $enddate = null) {
@@ -52,7 +54,6 @@ class Hostel {
       $this->availabilities[$date] =
          new Availability($room, $date, $nbeds, $price);
    }
-
 }
 
 ?>
