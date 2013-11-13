@@ -16,6 +16,10 @@ class XML_Database implements DatabaseInterface {
    public function init() {
       $this->dom_root = new SimpleXMLElement("<HostelData></HostelData>");
       $this->dom_root->addChild("hostels");
+      $this->persist();
+   }
+
+   private function persist() {
       $this->dom_root->saveXML($this->xml_file);
    }
 
@@ -34,13 +38,27 @@ class XML_Database implements DatabaseInterface {
             $avail->addChild("date", $date);
             $avail->addChild("bed", $qty);
             $avail->addChild("price", $price);
-            $this->dom_root->asXML($this->xml_file);
+            $this->persist();
             return new Availability($room, $date, $qty, $price, $hostel_name);
          }
       }
       return null;
    }
-   public function update_availability($hostel, $room, $date, $qty, $price){}
+   public function update_availability($hostel_name, $date, $room, $qty, $price){
+      $hostel_list = $this->dom_root->hostels;
+      foreach ($hostel_list->hostel as $hostel) {
+         if ($hostel->name == $hostel_name) {
+            foreach ($hostel->availabilities->availability as $avail){
+               if ((int)$avail->room[0] == $room and (string)$avail->date[0] == $date) {
+                  $avail->bed = new SimpleXMLElement("<bed>$qty</bed>");
+                  $avail->price[0] = $price;
+                  $this->persist();
+               }
+            }
+         }
+      }
+
+   }
    public function search_availability($sparam){
       $sdates = BookingDate::dates_from_range($sparam["start_date"], $sparam["end_date"]);
       $dom = $this->dom_root->hostels;
@@ -105,7 +123,7 @@ class XML_Database implements DatabaseInterface {
 
       $availabilities = $hostel->addChild("availabilities");
 
-      $this->dom_root->asXML($this->xml_file);
+      $this->persist();
 
       return new Hostel($name, $address, $contact, $restrict);
    }

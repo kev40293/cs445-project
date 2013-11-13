@@ -56,18 +56,12 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testUpdateAvail() {
-      //$this->db->add_availability($this->avail1);
-      //$avail2 = new Availability(1, "20131111", 3, 25, $this->hostel1);
-      //$this->db->update_availability($avail2);
-      //$search = array("start_date" => "20131111",
-       //               "end_date" => "20131111",
-        //              "num" => 1,
-         //             "city" => null);
-      //$results = $this->db->search_availability($search);
-      //foreach ($results as $r) {
-       //  if ($r->equals($this->avail1))
-        //    $this->assertEquals(3, $r->free_space());
-      //}
+      $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $this->db->update_availability("Hostel 21", "20131111", 1, 2, 25);
+      $search = search_object("20131111");
+      $results = $this->db->search_availability($search);
+      $this->assertCount(1, $results);
+      $this->assertEquals(2, $results[0]->free_space());
    }
 
 }

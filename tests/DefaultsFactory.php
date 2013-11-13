@@ -28,10 +28,10 @@ function default_contact () {
    return $cont;
 }
 
-function search_object() {
+function search_object($date = null) {
    return array(
-      "start_date" => null,
-      "end_date" => null,
+      "start_date" => $date,
+      "end_date" => $date,
       "num" => 0,
       "city" => null);
 }
