@@ -20,6 +20,10 @@ class Hostel {
 
    public function get_name() {return $this->name; }
 
+   public function get_city() {
+      return $this->address["city"];
+   }
+
    public function get_available_beds($date, $enddate = null) {
       if ($enddate == null) {
          $enddate = $date;
@@ -57,7 +61,7 @@ class Hostel {
          new Availability($room, $date, $nbeds, $price, $this);
    }
 
-   public function equals($hos) {
+   public function equals($host) {
       return $this->name == $host->get_name();
    }
 }
