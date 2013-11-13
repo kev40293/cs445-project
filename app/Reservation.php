@@ -1,7 +1,7 @@
 <?php
-require_once("Bed.php");
 require_once("Customer.php");
 require_once("Date.php");
+require_once("Availability.php");
 class Reservation {
    protected $res_id;
    protected $beds = array();

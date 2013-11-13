@@ -18,6 +18,8 @@ class Hostel {
       $this->restrictions = $rest;
    }
 
+   public function get_name() {return $this->name; }
+
    public function get_available_beds($date, $enddate = null) {
       if ($enddate == null) {
          $enddate = $date;
@@ -52,7 +54,11 @@ class Hostel {
 
    public function add_availability($date, $room, $nbeds, $price) {
       $this->availabilities[$date] =
-         new Availability($room, $date, $nbeds, $price);
+         new Availability($room, $date, $nbeds, $price, $this);
+   }
+
+   public function equals($hos) {
+      return $this->name == $host->get_name();
    }
 }
 
