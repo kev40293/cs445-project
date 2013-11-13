@@ -3,12 +3,12 @@
 require_once("Availability.php");
 
 class Hostel {
-   protected $name;
-   protected $address;
-   protected $contact;
-   protected $restrictions;
-   protected $availabilities;
-   protected $beds = array();
+   private $id;
+   private $name;
+   private $address;
+   private $contact;
+   private $restrictions;
+   private $availabilities;
 
    public function __construct($n, $add, $cont, $rest) {
       $this->name = $n;
@@ -23,46 +23,25 @@ class Hostel {
       return $this->address["city"];
    }
 
-   public function get_available_beds($date, $enddate = null) {
-      if ($enddate == null) {
-         $enddate = $date;
-      }
-      $free_beds = array();
-      foreach ($this->beds as $bed) {
-         if ($bed->is_free($date, $enddate)){
-            array_push($free_beds, $bed);
-         }
-      }
-      return $free_beds;;
+   public function get_address() {
+      return $this->address;
    }
-
-   public function get_availabilities($date, $enddate = null, $num = 1) {
-      if ($enddate == null) {
-         $enddate = $date;
-      }
-      $results = array();
-      $rooms = array();
-      foreach (BookingDate::dates_from_range($date, $enddate) as $d) {
-         if (isset($this->availabilities[$d])) {
-            foreach($this->availabilities[$d] as $av) {
-               if ($av->free_space() >= $num)
-                  $rooms[$av->room()][] = $av;
-            }
-         }
-         else
-            return array();
-      }
-      return $this->availabilities[$date];
+   public function get_contact() {
+      return $this->contact;
+   }
+   public function get_restrictions() {
+      return $this->restrictions;
    }
 
    public function add_availability($date, $room, $nbeds, $price) {
-      $this->availabilities[$date] =
-         new Availability($room, $date, $nbeds, $price, $this);
+      $db = open_database();
+      $db->add_availability($this->name, $date, $room, $nbeds, $price);
    }
 
    public function equals($host) {
       return $this->name == $host->get_name();
    }
+
 }
 
 ?>

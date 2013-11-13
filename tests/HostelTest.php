@@ -2,6 +2,8 @@
 
 require_once("PHPUnit.php");
 require_once("../app/Hostel.php");
+require_once("../app/Database.php");
+require_once("DefaultsFactory.php");
 
 class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    protected $hostel;
@@ -9,79 +11,21 @@ class Check_AvailabilitiesTest extends PHPUnit_Framework_TestCase {
    protected $date2;
    protected $rate1;
    protected $init_dates;
-   protected $bed_one;
-   protected $bed_two;
 
    protected function setUp(){
-      $this->date1 = "20131010";
-      $this->date2 = "20131011";
-      $this->rate1 = "25";
-      $this->init_dates = array($this->date1, $this->date2);
-      $this->bed_one = new Bed(1, $this->init_dates, $this->rate1);
-      $this->bed_two = new Bed(2, $this->init_dates, $this->rate1);
-
-      $this->hostel = new Hostel(array($this->bed_one, $this->bed_two));
-   }
-
-   public function testNoAvailabilities() {
-      $this->bed_one->book($this->date1);
-      $this->bed_two->book($this->date1);
-
-      $avail = $this->hostel->get_available_beds($this->date1);
-      $this->assertEquals(sizeof($avail), 0);
-
-   }
-
-   public function testReturnAvailable() {
-      $this->bed_one->book($this->date1);
-
-      $avail = $this->hostel->get_available_beds($this->date1);
-      $this->assertEquals(sizeof($avail), 1);
-      $this->assertEquals($this->bed_two, $avail[0]);
-   }
-
-   public function testMultipleAvailable() {
-      $avail = $this->hostel->get_available_beds($this->date1);
-      $this->assertGreaterThan(1, sizeof($avail));
-   }
-
-   public function testMultipleDates() {
-      $avail = $this->hostel->get_available_beds($this->date1, $this->date2);
-      $this->assertGreaterThan(1, sizeof($avail));
-   }
-
-   public function testMultipleDatesSomeBooked() {
-      $avail = $this->hostel->get_available_beds($this->date1, $this->date2);
-      $origCount = sizeof($avail);
-      $this->bed_two->book($this->date2);
-      $avail = $this->hostel->get_available_beds($this->date1, $this->date2);
-      $this->assertEquals($origCount -1, sizeof($avail));
+      $db = init_database();
+      $this->hostel = $db->add_hostel("Hostel 21",
+         default_address(), default_contact(), default_restrictions());
    }
 
    public function testAddAvailability() {
-      $this->hostel->add_availability($this->date1, 1, 1, 25);
-      $avail = $this->hostel->get_availabilities($this->date1);
-      $this->assertEquals(1, sizeof($avail));
-   }
-
-   public function testGetAvailabilitiesNone() {
-      $this->hostel->add_availability($this->date1, 1, 1, 25);
-      $avail = $this->hostel->get_availabilities($this->date2);
-      $this->assertEquals(0, sizeof($avail));
-   }
-
-   public function testGetAvailabilitiesNotEnoughSpace() {
-      $this->hostel->add_availability($this->date1, 1, 1, 25);
-      $avail = $this->hostel->get_availabilities($this->date1, $num = 2);
-      $this->assertEquals(0, sizeof($avail));
-   }
-
-   public function testAddAvailabilityRange() {
-      foreach (array($this->date1, $this->date2) as $d) {
-         $this->hostel->add_availability($d, 1, 1, 25);
-      }
-      $avail = $this->hostel->get_availabilities($this->date1, $this->date2);
-      $this->assertEquals(1, sizeof($avail));
+      $this->hostel->add_availability("20131111", 1,3,25);
+      $search = search_object();
+      $search["start_date"] = "20131111";
+      $search["end_date"] = "20131111";
+      $db = open_database();
+      $res = $db->search_availability($search);
+      $this->assertCount(1, $res);
    }
 }
 
