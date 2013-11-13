@@ -23,16 +23,6 @@ class Hostel {
       return $this->address["city"];
    }
 
-   public function get_address() {
-      return $this->address;
-   }
-   public function get_contact() {
-      return $this->contact;
-   }
-   public function get_restrictions() {
-      return $this->restrictions;
-   }
-
    public function add_availability($date, $room, $nbeds, $price) {
       $db = open_database();
       $db->add_availability($this->name, $date, $room, $nbeds, $price);
