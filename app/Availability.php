@@ -1,6 +1,7 @@
 <?php
 
 require_once("Date.php");
+require_once("Hostel.php");
 require_once("Exceptions.php");
 
 class Availability {
@@ -43,14 +44,16 @@ class Availability {
 
    public function equals($avail) {
       return $this->room_number == $avail->room_number and
-         $this->hostel->equals($avail->hostel);
+         $this->hostel->equals($avail->hostel) and $this->date == $avail->date;
    }
 
    public function matches($sparam) {
       $sdates = BookingDate::dates_from_range($sparam["start_date"], $sparam["end_date"]);
-      if ($this->hostel != null)
-         if ($this->hostel->get_city() != $sparam["city"])
+      if ($sparam["city"] != null) {
+         if ($this->hostel->get_city() != $sparam["city"]) {
             return false;
+         }
+      }
       return in_array($this->date, $sdates) and $this->quantity >= $sparam["num"];
    }
 
