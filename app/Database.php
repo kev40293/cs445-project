@@ -15,7 +15,6 @@ interface DatabaseInterface {
    public function get_hostel_policy($hostel_name);
 }
 
-require_once("Bed.php");
 require_once("Hostel.php");
 require_once("Reservation.php");
 
@@ -27,7 +26,7 @@ class MemoryDatabase implements DatabaseInterface {
 
    public function add_customer($cust){}
    public function update_customer($cust){
-      foreach ($this->customers as $c) {
+      foreach ($this->customers as &$c) {
          if ($c->equals($cust)) {
             $c = $cust;
          }
@@ -38,7 +37,7 @@ class MemoryDatabase implements DatabaseInterface {
       $this->availabilities[] = $avail;
    }
    public function update_availability($avail){
-      foreach ($this->availabilities as $av) {
+      foreach ($this->availabilities as &$av) {
          if ($av->equals($avail)) {
             $av = $avail;
          }
@@ -58,7 +57,7 @@ class MemoryDatabase implements DatabaseInterface {
       $this->reservations[] = $resv;
    }
    public function update_reservation($resv){
-      foreach ($this->reservation as $res) {
+      foreach ($this->reservation as &$res) {
          if ($res->equals($resv)) {
             $res = $resv;
          }

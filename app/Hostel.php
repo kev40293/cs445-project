@@ -1,6 +1,5 @@
 <?php
 
-require_once("Bed.php");
 require_once("Availability.php");
 
 class Hostel {

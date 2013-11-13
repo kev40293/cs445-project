@@ -18,8 +18,12 @@ class Availability {
       $this->hostel = $h;
    }
 
+   public function get_date() { return $this->date; }
+   public function get_room() { return $this->room_number; }
+   public function get_hostel() { return $this->hostel->get_name(); }
+
    public function get_price() {
-      return $rate;
+      return $this->rate;
    }
 
    public function add_bed($num = 1) {

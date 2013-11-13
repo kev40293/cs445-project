@@ -2,45 +2,55 @@
 require_once("Customer.php");
 require_once("Date.php");
 require_once("Availability.php");
+
 class Reservation {
    protected $res_id;
-   protected $beds = array();
+   protected $bookings;
    protected $customer;
 
-   public function __construct($id, $cust) {
-      $this->customer = $cust;
-      $this->res_id = $id;
+   public function __construct() {
+      $this->bookings = array();
    }
 
-   public function add_bed($bed, $start_date, $num_days = 1) {
-      $dates = BookingDate::date_range($start_date, $num_days);
-      foreach ($dates as $date){
-         $bed->book($date);
-         $this->beds[$date][] = $bed;
+   public function add_availability($avail, $qty) {
+      $this->bookings[] = array($avail, $qty, false);
+   }
+
+
+   public function bed_list() {
+      // Create a list of beds from the avail/num
+      $blist = array();
+      foreach ($this->bookings as $record) {
+         if ($record[2])
+            $blist[$record[0]->get_date()][] = array($record[0]->get_room(), $record[1]);
       }
+      return $blist;
    }
 
-   public function get_bookings() {
-      return $this->beds;
+   public function book($cust) {
+      foreach ($this->bookings as &$b) {
+         if (!$b[2]){
+            $b[0]->reserve($b[1]);
+            $b[2] = true;
+         }
+      }
    }
 
    public function cancel() {
-      foreach ($this->beds as $date => $bed_list) {
-         foreach ($bed_list as $bed) {
-            $bed->free($date);
+      foreach ($this->bookings as &$b) {
+         if ($b[2]) {
+            $b[0]->add_bed($b[1]);
+            $b[2] = false;
          }
       }
-      $this->beds = array();
    }
 
-   public function calculate_cost() {
-      $sum = 0;
-      foreach ($this->beds as $date => $bed_list) {
-         foreach ($bed_list as $bed) {
-            $sum += $bed->get_rate();
-         }
+   public function get_cost() {
+      $cost = 0;
+      foreach ($this->bookings as $b) {
+         $cost += $b[0]->get_price() * $b[1];
       }
-      return $sum;
+      return $cost;
    }
 
 }
