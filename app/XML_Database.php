@@ -96,6 +96,9 @@ class XML_Database implements DatabaseInterface {
       $reservs = $this->dom_root->reservations;
       $resv_record = $reservs->addChild("reservation");
       foreach ($resv->bed_list() as $date => $beds) {
+         $rid = (int)$reservs["next_id"];
+         $reservs["next_id"] = $rid +1;
+         $resv_record->addChild("id", $rid);
          foreach ($beds as $bed) {
             $rbed = $resv_record->addChild("bed");
             $rbed->addChild("cust". $cust_id);
@@ -105,16 +108,22 @@ class XML_Database implements DatabaseInterface {
             $rbed->addChild("hostel", $bed[2]);
          }
       }
-      $rid = (int)$reservs["next_id"];
-      $reservs["next_id"] = $rid +1;
       $this->persist();
       return $rid;
    }
    public function update_reservation($resv_id, $resv){
    }
    public function delete_reservation($resv_id){
+      $resv_dom = $this->dom_root->reservations;
+      foreach ($resv_dom->reservation as $ind => $reservation) {
+         if ($reservation->id == $resv_id) {
+            unset( $resv_dom->reservation[$ind]);
+         }
+      }
+      $this->persist();
    }
    public function search_reservation($param){
+      return array();
    }
 
    public function get_hostels($param){}

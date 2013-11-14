@@ -37,12 +37,16 @@ class MakeReservationTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(1, sizeof($rbeds));
       $this->assertEquals(1, (int)$rid);
    }
+
    public function testCancelReservation() {
       $this->reservation->add_availability($this->avail1, 2);
-      $this->reservation->book(1);
+      $rid = $this->reservation->book(1);
       $this->reservation->cancel();
       $rbeds = $this->reservation->bed_list();
       $this->assertEquals(0, sizeof($rbeds));
+      $db = open_database();
+      $res = $db->search_reservation($rid);
+      $this->assertEmpty($res);
    }
 
    public function testTwoBookings() {
