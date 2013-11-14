@@ -4,7 +4,7 @@
          <file>DatabaseTest.php</file>
          <file>BookingDateTest.php</file>
          <file>AvailabilityTest.php</file>
-         <file>ReservationTest.php</file>
+         <!--<file>ReservationTest.php</file>-->
          <file>HostelTest.php</file>
       </testsuite>
    </testsuites>

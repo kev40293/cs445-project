@@ -18,6 +18,9 @@ class XML_Database implements DatabaseInterface {
       $this->dom_root->addChild("hostels");
       $this->dom_root->addChild("reservations");
       $this->dom_root->reservations->addAttribute("next_id", "1");
+      $this->dom_root->addChild("customer");
+      $this->dom_root->customer->addAttribute("next_id", "1");
+      $this->dom_root->addAttribute("num_records", "0");
       $this->persist();
    }
 
@@ -26,16 +29,18 @@ class XML_Database implements DatabaseInterface {
    }
 
    public function add_customer($cust){
-      // whatever man
       return new Customer();
    }
    public function update_customer($cust){}
 
    public function add_availability($hostel_name, $date, $room, $qty, $price){
       $curr = $this->dom_root->hostels;
+      $id = $this->dom_root["num_records"] + 1;
+      $this->dom_root["num_records"] = $id;
       foreach ($curr->hostel as $host) {
          if ($host->name == $hostel_name){
             $avail = $host->availabilities->addChild("availability");
+            $avail->addChild("id", $id);
             $avail->addChild("room", $room);
             $avail->addChild("date", $date);
             $avail->addChild("bed", $qty);
@@ -52,7 +57,7 @@ class XML_Database implements DatabaseInterface {
          if ($hostel->name == $hostel_name) {
             foreach ($hostel->availabilities->availability as $avail){
                if ((int)$avail->room[0] == $room and (string)$avail->date[0] == $date) {
-                  $avail->bed = new SimpleXMLElement("<bed>$qty</bed>");
+                  $avail->bed[0] += $qty;
                   $avail->price[0] = $price;
                   $this->persist();
                }
@@ -66,9 +71,9 @@ class XML_Database implements DatabaseInterface {
       $dom = $this->dom_root->hostels;
       $results = array();
       foreach ($dom->hostel as $hostel){
-         if ($sparam["city"] == null or $sparam["city"] == $hostel->name){
+         if ($sparam["city"] == null or $sparam["city"] == $hostel->address->city){
             $sub_result = $this->matchAvailability($hostel, $sdates, $sparam['num']);
-            $results = array_merge($sub_result, $results);
+            $results = $sub_result + $results;
          }
       }
       return $results;
@@ -78,8 +83,8 @@ class XML_Database implements DatabaseInterface {
       $res = array();
       $hostel_avail = $hostel_xml->availabilities;
       foreach ($hostel_avail->availability as $availability) {
-         if (in_array($availability->date, $dates) and $availability->bed >= $qty) {
-            $res[] = $this->xml_to_avail($availability, $hostel_xml->name);
+         if (empty($dates) or (in_array($availability->date, $dates) and $availability->bed >= $qty)) {
+            $res[(int)$availability->id] = $this->xml_to_avail($availability, $hostel_xml->name);
          }
       }
       return $res;
@@ -92,26 +97,17 @@ class XML_Database implements DatabaseInterface {
                               (string) $hname);
    }
 
-   public function record_reservation($cust_id, $resv){
+   public function make_reservation($cust_id, $avail_id, $qty){
       $reservs = $this->dom_root->reservations;
       $resv_record = $reservs->addChild("reservation");
       $rid = (int)$reservs["next_id"];
       $reservs["next_id"] = $rid +1;
       $resv_record->addChild("id", $rid);
-      foreach ($resv->bed_list() as $date => $beds) {
-         foreach ($beds as $bed) {
-            $rbed = $resv_record->addChild("bed");
-            $rbed->addChild("cust". $cust_id);
-            $rbed->addChild("date", $date);
-            $rbed->addChild("qty", $bed[1]);
-            $rbed->addChild("room", $bed[0]);
-            $rbed->addChild("hostel", $bed[2]);
-         }
-      }
-      $this->persist();
+      $resv_record->addChild("cust". $cust_id);
+      $resv_record->addChild("avail", $avail_id);
+      $resv_record->addChild("qty", $qty);
+      $resv_record->persist();
       return $rid;
-   }
-   public function update_reservation($resv_id, $resv){
    }
    public function delete_reservation($resv_id){
       $resv_dom = $this->dom_root->reservations;

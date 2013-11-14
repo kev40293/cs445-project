@@ -3,7 +3,7 @@
 function default_address() {
    $add = new SimpleXMLElement("<address></address>");
    $add->addChild("street");
-   $add->addChild("city");
+   $add->addChild("city", "Chicago");
    $add->addChild("country");
    $add->addChild("state");
    $add->addChild("postal_code");
@@ -11,7 +11,7 @@ function default_address() {
 }
 
 function default_restrictions() {
-   $rest = new SimpleXMLElement("<address></address>");
+   $rest = new SimpleXMLElement("<restrictions></restrictions>");
    $rest->addChild("check_in_time");
    $rest->addChild("check_out_time");
    $rest->addChild("smoking");

@@ -10,7 +10,6 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    protected $hostel1;
 
    protected function setUp() {
-      #$this->db = new MemoryDatabase("test_data.xml");
       $this->db = init_database();
       $this->db->init();
       $this->hostel1 = $this->db->add_hostel("Hostel 21", default_address(),
@@ -28,18 +27,24 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEmpty($ret);
    }
 
+   public function testSearchEmptyAll() {
+      $avail = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $ret = $this->db->search_availability(null);
+      $this->assertCount(1, $ret);
+   }
+
    public function testAddAvailability() {
       $avail = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $this->assertFalse($avail == null);
       $this->assertTrue($avail->free_space() == 4);
    }
 
-   public function testSearchAvail() {
+   public function testSearchAvailCity() {
       $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $search = array("start_date" => "20131111",
                       "end_date" => "20131111",
                       "num" => 1,
-                      "city" => null);
+                      "city" => "Chicago");
       $results = $this->db->search_availability($search);
       $this->assertCount(1, $results);
    }
@@ -55,32 +60,38 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertCount(2, $results);
    }
 
+   public function testSearchCity() {
+      $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $this->db->add_availability("Hostel 21", "20131111", 2, 2, 25);
+      $search = array("start_date" => "20131111",
+                      "end_date" => "20131111",
+                      "num" => 1,
+                      "city" => "Chicago");
+      $results = $this->db->search_availability($search);
+      $this->assertCount(2, $results);
+   }
+
    public function testUpdateAvail() {
       $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
-      $this->db->update_availability("Hostel 21", "20131111", 1, 2, 25);
+      $this->db->update_availability("Hostel 21", "20131111", 1, -2, 25);
       $search = search_object("20131111");
       $results = $this->db->search_availability($search);
       $this->assertCount(1, $results);
-      $this->assertEquals(2, $results[0]->free_space());
+      $this->assertEquals(2, $results[1]->free_space());
    }
 
-   public function testRecordReservation() {
-      $reservation = new Reservation();
-      $db = open_database();
-      $rid = $db->record_reservation(1, $reservation);
-      $this->assertEquals(1, $rid);
-      $res = $db->search_reservation(array("id" => $rid));
-      $this->assertCount(1, $res);
+   public function testSearchReturnsIDindex() {
+      $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $this->db->add_availability("Hostel 21", "20131112", 2, 2, 25);
+      $search = array("start_date" => "20131112",
+                      "end_date" => "20131112",
+                      "num" => 1,
+                      "city" => "Chicago");
+      $results = $this->db->search_availability($search);
+      $this->assertArrayHasKey(2, $results);
    }
 
-   public function testDeleteReservation() {
-      $reservation = new Reservation();
-      $db = open_database();
-      $rid = $db->record_reservation(1, $reservation);
-      $db->delete_reservation($rid);
-      $res = $db->search_reservation(array("id" => $rid));
-      $this->assertCount(0, $res);
-   }
+
 
 }
 

@@ -11,13 +11,13 @@ interface DatabaseInterface {
    public function update_availability($hostel, $room, $date, $num, $price);
    public function search_availability($param);
 
-   public function record_reservation($cust_id, $resv);
+   public function make_reservation($cust_id, $avail, $num);
    public function delete_reservation($resv_id);
-   public function update_reservation($resv_id, $resv);
    public function search_reservation($param);
 
    public function get_hostels($param);
    public function add_hostel($name, $address, $contact, $restrict);
+
 }
 
 require_once("Hostel.php");

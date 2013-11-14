@@ -11,7 +11,7 @@ class Availability {
    protected $date;
    protected $hostel;
 
-   public function __construct($rn, $d, $num, $price, $h){
+   public function __construct($rn, $d, $num, $price, $h, $id = 0){
       $this->room_number = $rn;
       $this->date = $d;
       $this->quantity = $num;
