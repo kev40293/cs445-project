@@ -33,7 +33,9 @@ function search_object($date = null) {
       "start_date" => $date,
       "end_date" => $date,
       "num" => 0,
-      "city" => null);
+      "city" => null,
+      "resv_id" => null
+   );
 }
 
 ?>

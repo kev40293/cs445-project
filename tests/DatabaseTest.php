@@ -64,6 +64,24 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(2, $results[0]->free_space());
    }
 
+   public function testRecordReservation() {
+      $reservation = new Reservation();
+      $db = open_database();
+      $rid = $db->record_reservation(1, $reservation);
+      $this->assertEquals(1, $rid);
+      $res = $db->search_reservation(array("id" => $rid));
+      $this->assertCount(1, $res);
+   }
+
+   public function testDeleteReservation() {
+      $reservation = new Reservation();
+      $db = open_database();
+      $rid = $db->record_reservation(1, $reservation);
+      $db->delete_reservation($rid);
+      $res = $db->search_reservation(array("id" => $rid));
+      $this->assertCount(0, $res);
+   }
+
 }
 
 ?>

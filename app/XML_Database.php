@@ -95,10 +95,10 @@ class XML_Database implements DatabaseInterface {
    public function record_reservation($cust_id, $resv){
       $reservs = $this->dom_root->reservations;
       $resv_record = $reservs->addChild("reservation");
+      $rid = (int)$reservs["next_id"];
+      $reservs["next_id"] = $rid +1;
+      $resv_record->addChild("id", $rid);
       foreach ($resv->bed_list() as $date => $beds) {
-         $rid = (int)$reservs["next_id"];
-         $reservs["next_id"] = $rid +1;
-         $resv_record->addChild("id", $rid);
          foreach ($beds as $bed) {
             $rbed = $resv_record->addChild("bed");
             $rbed->addChild("cust". $cust_id);
@@ -115,15 +115,28 @@ class XML_Database implements DatabaseInterface {
    }
    public function delete_reservation($resv_id){
       $resv_dom = $this->dom_root->reservations;
+      $index = -1;
       foreach ($resv_dom->reservation as $ind => $reservation) {
+         $index++;
          if ($reservation->id == $resv_id) {
-            unset( $resv_dom->reservation[$ind]);
+            unset ($this->dom_root->reservations->reservation[$index]);
+            $this->persist();
+            return;
          }
       }
-      $this->persist();
    }
    public function search_reservation($param){
+      $resv_list = $this->dom_root->reservations;
+      foreach ($resv_list->reservation as $reservation) {
+         if ($param["id"] != null and $param["id"] == $reservation->id) {
+            return array($this->xml_to_reservation($reservation));
+         }
+      }
       return array();
+   }
+
+   private function xml_to_reservation($resv) {
+      return new Reservation();
    }
 
    public function get_hostels($param){}

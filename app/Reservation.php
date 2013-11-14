@@ -4,9 +4,13 @@ require_once("Date.php");
 require_once("Availability.php");
 
 class Reservation {
-   protected $res_id;
-   protected $availability;
-   protected $customer;
+   private $res_id;
+   private $availability;
+   private $customer;
+   private $date;
+   private $hostel;
+   private $room;
+   private $quantity;
 
    public function __construct() {
       $this->bookings = array();
