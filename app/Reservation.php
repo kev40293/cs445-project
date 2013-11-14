@@ -5,7 +5,7 @@ require_once("Availability.php");
 
 class Reservation {
    protected $res_id;
-   protected $bookings;
+   protected $availability;
    protected $customer;
 
    public function __construct() {
@@ -22,18 +22,22 @@ class Reservation {
       $blist = array();
       foreach ($this->bookings as $record) {
          if ($record[2])
-            $blist[$record[0]->get_date()][] = array($record[0]->get_room(), $record[1]);
+            $blist[$record[0]->get_date()][] = array($record[0]->get_room(), $record[1], $record[0]->get_hostel());
       }
       return $blist;
    }
 
-   public function book($cust) {
+   public function book($cust_id) {
+      $this->customer = $cust_id;
       foreach ($this->bookings as &$b) {
          if (!$b[2]){
             $b[0]->reserve($b[1]);
             $b[2] = true;
          }
       }
+      $db = open_database();
+      $this->res_id = $db->record_reservation($cust_id, $this);
+      return $this->res_id;
    }
 
    public function cancel() {
@@ -43,6 +47,8 @@ class Reservation {
             $b[2] = false;
          }
       }
+      $db = open_database();
+      $db->delete_reservation($this->res_id);
    }
 
    public function get_cost() {

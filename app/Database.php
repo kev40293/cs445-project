@@ -11,7 +11,7 @@ interface DatabaseInterface {
    public function update_availability($hostel, $room, $date, $num, $price);
    public function search_availability($param);
 
-   public function record_reservation($resv);
+   public function record_reservation($cust_id, $resv);
    public function delete_reservation($resv_id);
    public function update_reservation($resv_id, $resv);
    public function search_reservation($param);

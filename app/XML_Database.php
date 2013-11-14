@@ -16,6 +16,8 @@ class XML_Database implements DatabaseInterface {
    public function init() {
       $this->dom_root = new SimpleXMLElement("<HostelData></HostelData>");
       $this->dom_root->addChild("hostels");
+      $this->dom_root->addChild("reservations");
+      $this->dom_root->reservations->addAttribute("next_id", "1");
       $this->persist();
    }
 
@@ -90,10 +92,30 @@ class XML_Database implements DatabaseInterface {
                               (string) $hname);
    }
 
-   public function record_reservation($resv){}
-   public function update_reservation($resv_id, $resv){}
-   public function delete_reservation($resv_id){}
-   public function search_reservation($param){}
+   public function record_reservation($cust_id, $resv){
+      $reservs = $this->dom_root->reservations;
+      $resv_record = $reservs->addChild("reservation");
+      foreach ($resv->bed_list() as $date => $beds) {
+         foreach ($beds as $bed) {
+            $rbed = $resv_record->addChild("bed");
+            $rbed->addChild("cust". $cust_id);
+            $rbed->addChild("date", $date);
+            $rbed->addChild("qty", $bed[1]);
+            $rbed->addChild("room", $bed[0]);
+            $rbed->addChild("hostel", $bed[2]);
+         }
+      }
+      $rid = (int)$reservs["next_id"];
+      $reservs["next_id"] = $rid +1;
+      $this->persist();
+      return $rid;
+   }
+   public function update_reservation($resv_id, $resv){
+   }
+   public function delete_reservation($resv_id){
+   }
+   public function search_reservation($param){
+   }
 
    public function get_hostels($param){}
    public function add_hostel($name, $address, $contact, $restrict){
