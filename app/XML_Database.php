@@ -18,8 +18,8 @@ class XML_Database implements DatabaseInterface {
       $this->dom_root->addChild("hostels");
       $this->dom_root->addChild("reservations");
       $this->dom_root->reservations->addAttribute("next_id", "1");
-      $this->dom_root->addChild("customer");
-      $this->dom_root->customer->addAttribute("next_id", "1");
+      $this->dom_root->addChild("customers");
+      $this->dom_root->customers->addAttribute("next_id", "1");
       $this->dom_root->addAttribute("num_records", "0");
       $this->persist();
    }
@@ -28,10 +28,52 @@ class XML_Database implements DatabaseInterface {
       $this->dom_root->saveXML($this->xml_file);
    }
 
-   public function add_customer($cust){
-      return new Customer();
+   public function add_customer($fname, $lname, $email, $cc_info){
+      $cust_dom = $this->dom_root->customers;
+      $cust_id = (int)$cust_dom["next_id"];
+      $cust_dom["next_id"] = $cust_id + 1;
+      $customer = new Customer($cust_id);
+      $cdom = $cust_dom->addChild("customer");
+      $cdom->addChild("id", $cust_id);
+      $cdom->addChild("first_name", $fname);
+      $cdom->addChild("last_name", $lname);
+      $cdom->addChild("email", $email);
+      $cc = $cdom->addChild("cc_info");
+      foreach ($cc_info as $key => $val) {
+         $cc->addChild($key, $val);
+      }
+      $this->persist();
+      return $customer;
    }
-   public function update_customer($cust){}
+   public function update_customer($cust_id, $options){
+      $customer_list = $this->dom_root->customers;
+      foreach ($customer_list->customer as $customer){
+         if ($customer->id = $cust_id){
+            foreach ($customer->children() as $child){
+               if (isset($options[$child->getName()])){
+                  $customer->{$child->getName()} =  $options[$child->getName()];
+               }
+            }
+         }
+      }
+      $this->persist();
+   }
+   private function create_xml_node($name, $value) {
+      return new SimpleXMLElement("<$name>$value</$name>");
+   }
+   public function get_customer_info($cust_id){
+      $customer_list = $this->dom_root->customers;
+      foreach ($customer_list->customer as $customer){
+         if ($customer->id = $cust_id){
+            $info = array();
+            foreach ($customer->children() as $node){
+               $info[$node->getName()] = (string)$node;
+            }
+            return $info;
+         }
+      }
+   }
+
 
    public function add_availability($hostel_name, $date, $room, $qty, $price){
       $curr = $this->dom_root->hostels;

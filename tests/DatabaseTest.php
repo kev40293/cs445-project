@@ -91,7 +91,23 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertArrayHasKey(2, $results);
    }
 
+   public function testAddCustomer() {
+      $cust = $this->db->add_customer("Kevin", "Brandstatter", "nothing@me.com", array());
+      $info = $this->db->get_customer_info($cust->get_id());
+      $this->assertEquals("Kevin", $info["first_name"]);
+      $this->assertEquals("Brandstatter", $info["last_name"]);
+      $this->assertEquals("nothing@me.com", $info["email"]);
+   }
 
+   public function testUpdateCustomer() {
+      $cust = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $this->db->update_customer($cust->get_id(),
+         array("first_name" => "Kevin", "last_name" => "Brandstatter"));
+      $info = $this->db->get_customer_info($cust->get_id());
+      $this->assertEquals("Kevin", $info["first_name"]);
+      $this->assertEquals("Brandstatter", $info["last_name"]);
+      $this->assertEquals("nothing@me.com", $info["email"]);
+   }
 
 }
 

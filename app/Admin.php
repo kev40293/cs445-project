@@ -25,6 +25,24 @@ class Admin {
 
    }
 
+   public function create_user($fname, $lname, $email, $optional=array()){
+      $cc_options = array();
+      foreach (array("cc_number", "expiration_date", "security_code", "phone") as $oparg){
+         if (! isset($optional[$oparg]))
+            $optional[$oparg] = null;
+         else
+            $cc_options = $optional[$oparg];
+      }
+      $db = open_database();
+      $cust = $db->add_customer($fname, $lname, $email, $cc_options);
+      return $cust;
+   }
+
+   public function change_user($user_id, $options=array()){
+      $db = open_database();
+      $db->update_customer($user_id, $options);
+   }
+
    public function get_revenue() {
       return 0;
    }

@@ -4,8 +4,9 @@ interface DatabaseInterface {
    public function init();
    public function open();
 
-   public function add_customer($cust);
-   public function update_customer($cust);
+   public function add_customer($fname, $lname, $email, $cc_info);
+   public function update_customer($cust, $options);
+   public function get_customer_info($cust_id);
 
    public function add_availability($hostel, $rn, $d, $num, $price);
    public function update_availability($hostel, $room, $date, $num, $price);

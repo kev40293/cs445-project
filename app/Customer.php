@@ -8,17 +8,19 @@ class Customer {
       $this->customer_id = $cid;
    }
 
-   public function make_reservation($avail, $num_beds) {
-      $db = open_database();
-      $avail->reserve(2);
-      return $rid;
+   public function get_id() {return $this->customer_id; }
+
+   public function make_reservation($availability_id) {
+      // Create the reservation
+
    }
 
    public function cancel_reservation($reservation_id) {
+      // Cancelation policy handled here
    }
 
-   public function get_reservations() {
-      return null;
+   public function get_reservation($reservation_id) {
+      // Give Back a reservation object
    }
 
 }
