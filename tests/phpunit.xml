@@ -4,6 +4,7 @@
          <file>DatabaseTest.php</file>
          <file>BookingDateTest.php</file>
          <file>HostelTest.php</file>
+         <file>CustomerTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

@@ -23,16 +23,18 @@ class Customer {
       // Cancelation policy handled here
       // To determine if money should be subtracted
       $db = open_database();
-      $db->delete_reservation($reservation_id);
+      $db->delete_reservation($this->customer_id, $reservation_id);
    }
 
    public function get_reservation_info($reservation_id) {
       $db = open_database();
       $res_info = $db->get_reservation($reservation_id);
+      if ($res_info == null)
+         return null;
       foreach ($res_info["bookings"] as $record) {
          if (!isset( $res_info["hostel"][$record["hostel"]][$record["date"]]))
             $res_info["hostel"][$record["hostel"]][$record["date"]] = 0;
-         $res_info["hostel"][$record["hostel"]][$record["date"]] += $record["bed"];
+         $res_info["hostel"][$record["hostel"]][$record["date"]] += $record["qty"];
       }
 
       // Give Back a reservation object
