@@ -35,7 +35,7 @@ class Admin {
       }
       $db = open_database();
       $cust = $db->add_customer($fname, $lname, $email, $cc_options);
-      return $cust;
+      return $cust->get_id();
    }
 
    public function change_user($user_id, $options=array()){

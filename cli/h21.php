@@ -52,8 +52,23 @@ function user($args){
    }
 
 }
-function book(){
-   $cmd = array_pop($argv);
+function book($args){
+   $cmd = $args[2];
+   $opts = pair_args($args, 3);
+   if (!isset($opts["num_beds"])){
+     $opts["num_beds"] = 1;
+   }
+   if ($cmd == "add"){
+      $customer = new Customer($opts["user_id"]);
+      $res_id = $customer->make_reservation($opts["avail_id"], $opts["num_beds"]);
+      if ($res_id < 0){
+         print "Unable to make reservation\n";
+      }
+   }
+   if ($cmd == "cancel"){
+      $customer = new Customer($opts["user_id"]);
+      $customer->cancel_reservation($opts["book_id"]);
+   }
 }
 
 ?>

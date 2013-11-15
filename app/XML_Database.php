@@ -10,7 +10,12 @@ class XML_Database implements DatabaseInterface {
    }
 
    public function open() {
-      $this->dom_root = simplexml_load_file($this->xml_file);
+      if (file_exists($this->xml_file)) {
+         $this->dom_root = simplexml_load_file($this->xml_file);
+      }
+      else {
+         $this->init();
+      }
    }
 
    public function init() {
@@ -32,7 +37,6 @@ class XML_Database implements DatabaseInterface {
       $cust_dom = $this->dom_root->customers;
       $cust_id = (int)$cust_dom["next_id"];
       $cust_dom["next_id"] = $cust_id + 1;
-      $customer = new Customer($cust_id);
       $cdom = $cust_dom->addChild("customer");
       $cdom->addChild("id", $cust_id);
       $cdom->addChild("first_name", $fname);
@@ -43,7 +47,7 @@ class XML_Database implements DatabaseInterface {
          $cc->addChild($key, $val);
       }
       $this->persist();
-      return $customer;
+      return $cust_id;
    }
    public function update_customer($cust_id, $options){
       $customer_list = $this->dom_root->customers;
@@ -88,25 +92,29 @@ class XML_Database implements DatabaseInterface {
             $avail->addChild("bed", $qty);
             $avail->addChild("price", $price);
             $this->persist();
-            return new Availability($room, $date, $qty, $price, $hostel_name);
+            return $id;
          }
       }
       return null;
    }
-   public function update_availability($hostel_name, $date, $room, $qty, $price){
+   private function get_availability_by_id($a_id) {
       $hostel_list = $this->dom_root->hostels;
       foreach ($hostel_list->hostel as $hostel) {
-         if ($hostel->name == $hostel_name) {
-            foreach ($hostel->availabilities->availability as $avail){
-               if ((int)$avail->room[0] == $room and (string)$avail->date[0] == $date) {
-                  $avail->bed[0] += $qty;
-                  $avail->price[0] = $price;
-                  $this->persist();
-               }
+         foreach ($hostel->availabilities->availability as $avail){
+            if ((int)$avail->id == $a_id) {
+               return $avail;
             }
          }
       }
-
+   }
+   public function get_available_space($avail_id) {
+      $avail = $this->get_availability_by_id($avail_id);
+      return (int) $avail->bed;
+   }
+   public function update_available_space($avail_id, $qty){
+      $avail = $this->get_availability_by_id($avail_id);
+      $avail->bed[0] = $qty;
+      $this->persist();
    }
    public function search_availability($sparam){
       $sdates = BookingDate::dates_from_range($sparam["start_date"], $sparam["end_date"]);
@@ -145,18 +153,23 @@ class XML_Database implements DatabaseInterface {
       $rid = (int)$reservs["next_id"];
       $reservs["next_id"] = $rid +1;
       $resv_record->addChild("id", $rid);
-      $resv_record->addChild("cust". $cust_id);
+      $resv_record->addChild("cust", $cust_id);
       $resv_record->addChild("avail", $avail_id);
       $resv_record->addChild("qty", $qty);
-      $resv_record->persist();
+
+      $this->avail = $this->get_availability_by_id($avail_id);
+      $this->avail->bed -= $qty;
+      $this->persist();
       return $rid;
    }
-   public function delete_reservation($resv_id){
+   public function delete_reservation($cust_id, $resv_id){
       $resv_dom = $this->dom_root->reservations;
       $index = -1;
       foreach ($resv_dom->reservation as $ind => $reservation) {
          $index++;
-         if ($reservation->id == $resv_id) {
+         if ($reservation->id == $resv_id and $reservation->cust == $cust_id) {
+            $this->avail = $this->get_availability_by_id($reservation->avail);
+            $this->avail->bed += $reservation->qty;
             unset ($this->dom_root->reservations->reservation[$index]);
             $this->persist();
             return;

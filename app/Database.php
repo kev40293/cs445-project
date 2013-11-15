@@ -9,11 +9,11 @@ interface DatabaseInterface {
    public function get_customer_info($cust_id);
 
    public function add_availability($hostel, $rn, $d, $num, $price);
-   public function update_availability($hostel, $room, $date, $num, $price);
+   public function get_available_space($avail_id);
    public function search_availability($param);
 
    public function make_reservation($cust_id, $avail, $num);
-   public function delete_reservation($resv_id);
+   public function delete_reservation($cust_id, $resv_id);
    public function search_reservation($param);
 
    public function get_hostels($param);

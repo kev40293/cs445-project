@@ -34,9 +34,10 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    }
 
    public function testAddAvailability() {
-      $avail = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
-      $this->assertFalse($avail == null);
-      $this->assertTrue($avail->free_space() == 4);
+      $a_id = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $this->assertGreaterThan(0, $a_id);
+      $space = $this->db->get_available_space($a_id);
+      $this->assertTrue($space == 4);
    }
 
    public function testSearchAvailCity() {
@@ -71,14 +72,17 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertCount(2, $results);
    }
 
+   /*
    public function testUpdateAvail() {
-      $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
-      $this->db->update_availability("Hostel 21", "20131111", 1, -2, 25);
-      $search = search_object("20131111");
-      $results = $this->db->search_availability($search);
-      $this->assertCount(1, $results);
-      $this->assertEquals(2, $results[1]->free_space());
+      $a_id = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $this->db->update_available_space($a_id, -2);
+      $space = $this->db->get_available_space($a_id);
+      $this->assertEquals(2, $space);
+      $this->db->update_available_space($a_id, 2);
+      $space = $this->db->get_available_space($a_id);
+      $this->assertEquals(4, $space);
    }
+   */
 
    public function testSearchReturnsIDindex() {
       $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
@@ -93,7 +97,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
 
    public function testAddCustomer() {
       $cust = $this->db->add_customer("Kevin", "Brandstatter", "nothing@me.com", array());
-      $info = $this->db->get_customer_info($cust->get_id());
+      $info = $this->db->get_customer_info($cust);
       $this->assertEquals("Kevin", $info["first_name"]);
       $this->assertEquals("Brandstatter", $info["last_name"]);
       $this->assertEquals("nothing@me.com", $info["email"]);
@@ -101,12 +105,36 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
 
    public function testUpdateCustomer() {
       $cust = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
-      $this->db->update_customer($cust->get_id(),
+      $this->db->update_customer($cust,
          array("first_name" => "Kevin", "last_name" => "Brandstatter"));
-      $info = $this->db->get_customer_info($cust->get_id());
+      $info = $this->db->get_customer_info($cust);
       $this->assertEquals("Kevin", $info["first_name"]);
       $this->assertEquals("Brandstatter", $info["last_name"]);
       $this->assertEquals("nothing@me.com", $info["email"]);
+   }
+
+   public function testAddReservation(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $rid = $this->db->make_reservation($cid, $aid, 1);
+      $this->assertEquals(3, $this->db->get_available_space($aid));
+   }
+   public function testCancelReservation(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $rid = $this->db->make_reservation($cid, $aid, 1);
+      $this->db->delete_reservation($cid, $rid);
+      $this->assertEquals(4, $this->db->get_available_space($aid));
+   }
+
+   public function testDontCancelOtherUsersReservation(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $rid = $this->db->make_reservation($cid, $aid, 1);
+      $this->db->delete_reservation($cid+1, $rid);
+      $this->assertEquals(3, $this->db->get_available_space($aid));
+   }
+   public function testGetReservation(){
    }
 
 }
