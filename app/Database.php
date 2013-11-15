@@ -19,6 +19,7 @@ interface DatabaseInterface {
    public function get_hostels($param);
    public function add_hostel($name, $address, $contact, $restrict);
 
+   public function get_revenue();
 }
 
 require_once("Hostel.php");

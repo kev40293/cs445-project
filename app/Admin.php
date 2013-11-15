@@ -49,7 +49,8 @@ class Admin {
    }
 
    public function get_revenue() {
-      return 0;
+      $db = open_database();
+      return $db->get_revenue();
    }
 
    public function get_occupancy() {

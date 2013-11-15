@@ -39,6 +39,9 @@ function admin($args){
       echo "Loading Hostel Data\n";
       $admin->load_hostel($args[3]);
    }
+   else if ($cmd == "revenue") {
+     printf("Revenue: $%s\n\n", $admin->get_revenue());
+   }
 }
 function user($args){
    $cmd = $args[2];

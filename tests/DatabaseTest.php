@@ -137,6 +137,16 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    public function testGetReservation(){
    }
 
+   public function get_revenue() {
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $rid = $this->db->make_reservation($cid, $aid, 1);
+      $rid2 = $this->db->make_reservation($cid, $aid2, 2);
+      $this->assertEquals(95, $this->db->get_revenue());
+      $this->db->delete_reservation($cid, $rid);
+      $this->assertEquals(70, $this->db->get_revenue());
+   }
 }
 
 ?>

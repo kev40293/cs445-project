@@ -223,5 +223,14 @@ class XML_Database implements DatabaseInterface {
 
       return new Hostel($name, $address, $contact, $restrict);
    }
+
+   public function get_revenue() {
+      $revenue = 0;
+      foreach ($this->dom_root->reservations->reservation as $reservation){
+         $unit_cost = $this->get_availability_by_id($reservation->avail)->price;
+         $revenue += $unit_cost * $reservation->qty;
+      }
+      return $revenue;
+   }
 }
 ?>
