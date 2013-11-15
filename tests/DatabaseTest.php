@@ -158,13 +158,23 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    public function testGetReservation(){
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
-      $rid = $this->db->make_reservation($cid, $aid, 2);
+      $rid = $this->db->make_reservation($cid, $aid, 3);
       $res_info = $this->db->get_reservation($rid);
-      //$this->assertEquals( "20131111",  $res_info["check_in"]);
-      //$this->assertEquals( "Hostel 21",  $res_info["hostel"]);
-      //$this->assertEquals( 2,  $res_info["beds"]);
-      //$this->assertEquals( 50,  $res_info["price"]);
+      $this->assertEquals( 75,  $res_info["price"]);
       $this->assertEquals( $rid,  $res_info["id"]);
+      $this->assertEquals("Greene", $res_info["last_name"]);
+   }
+
+   public function testGetReservationMultiAvail(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $rid = $this->db->make_reservation($cid, $aid, 3);
+      $this->db->make_reservation($cid, $aid2, 1, $rid);
+      $res_info = $this->db->get_reservation($rid);
+      $this->assertEquals( 110,  $res_info["price"]);
+      $this->assertEquals( $rid,  $res_info["id"]);
+      $this->assertCount(2, $res_info["bookings"]);
    }
 
    public function testGetRevenue() {

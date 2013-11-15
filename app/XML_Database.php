@@ -99,15 +99,22 @@ class XML_Database implements DatabaseInterface {
       return null;
    }
    private function get_availability_by_id($a_id) {
+      return $this->get_hostel_availability_pair_by_id($a_id)[1];
+   }
+   private function get_hostel_for_availability_id($a_id) {
+      return $this->get_hostel_availability_pair_by_id($a_id)[0];
+   }
+   private function get_hostel_availability_pair_by_id($a_id) {
       $hostel_list = $this->dom_root->hostels;
       foreach ($hostel_list->hostel as $hostel) {
          foreach ($hostel->availabilities->availability as $avail){
             if ((int)$avail->id == $a_id) {
-               return $avail;
+               return array((string)$hostel->name , $avail);
             }
          }
       }
    }
+
    public function get_available_space($avail_id) {
       $avail = $this->get_availability_by_id($avail_id);
       return (int) $avail->bed;
@@ -201,8 +208,16 @@ class XML_Database implements DatabaseInterface {
    }
 
    private function xml_to_reservation($resv) {
-      $avail = $this->get_availability_by_id($resv->avail);
+      $resv_info["price"] = 0;
+      foreach ($resv->avail as $booking){
+         $hostel_avail = $this->get_hostel_availability_pair_by_id($booking);
+         $avail = $this->xml_to_avail($hostel_avail[1], $hostel_avail[0]);
+         $resv_info["bookings"][] = $avail;
+         $resv_info["price"] += $booking["qty"] * $avail["price"];
+      }
       $cust = $this->get_customer_info($resv->cust);
+      $resv_info["first_name"] = $cust["first_name"];
+      $resv_info["last_name"] = $cust["last_name"];
       $resv_info["id"] = (int) $resv->id;
       return $resv_info;
    }
