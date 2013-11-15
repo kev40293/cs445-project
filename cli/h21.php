@@ -30,7 +30,7 @@ function search ($argv) {
    $opts = pair_args($argv, 2);
    $search = new Search($opts);
    $results = $search->get_results();
-   var_dump($results);
+   print_results($results);
 }
 function admin($args){
    $cmd = $args[2];
@@ -50,7 +50,10 @@ function user($args){
    else if ($cmd == "change") {
       $admin->change_user($opts['user_id'], $opts);
    }
-
+   else if ($cmd == "view"){
+      $cinfo = $admin->get_customer_info($opts["user_id"]);
+      print_user($cinfo);
+   }
 }
 function book($args){
    $cmd = $args[2];
@@ -65,9 +68,41 @@ function book($args){
          print "Unable to make reservation\n";
       }
    }
-   if ($cmd == "cancel"){
+   else if ($cmd == "cancel"){
       $customer = new Customer($opts["user_id"]);
       $customer->cancel_reservation($opts["book_id"]);
+   }
+   else if ($cmd == "view"){
+      $customer = new Customer($opts["user_id"]);
+      $resv_info = $customer->get_reservation_info($opts["book_id"]);
+      print_reservation();
+   }
+}
+
+function print_user($user){
+   var_dump($user);
+}
+function print_reservation($reservation){
+   var_dump($reservation);
+}
+function print_results($results){
+   $hostels = array();
+   foreach ($results as $id => $sr) {
+      $hostels[$sr["hostel"]][$sr["date"]][$sr["room"]] =
+         array($id, $sr["bed"], $sr["price"]);
+   }
+   foreach($hostels as $hos => $dates){
+      print "Hostel: $hos\n";
+      foreach ($dates as $date => $rooms) {
+         $pdate = DateTime::createFromFormat('Ymd',$date, new DateTimeZone('UTC'));
+         $nice_date = $pdate->format('m/d/Y');
+         print "   Date: $nice_date\n";
+         foreach ($rooms as $room => $listing) {
+            print "      Room: $room\n";
+            print "         ". $listing[0] . ": " . $listing[1] . " at $" . $listing[2]. "\n";
+         }
+      }
+      print "\n";
    }
 }
 

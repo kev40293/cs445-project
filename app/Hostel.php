@@ -1,7 +1,5 @@
 <?php
 
-require_once("Availability.php");
-
 class Hostel {
    private $id;
    private $name;

@@ -22,7 +22,6 @@ interface DatabaseInterface {
 }
 
 require_once("Hostel.php");
-require_once("Reservation.php");
 
 class MemoryDatabase {
    private $hostels = array();

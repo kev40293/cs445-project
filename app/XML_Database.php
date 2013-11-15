@@ -1,6 +1,7 @@
 <?php
 
 require_once("Database.php");
+require_once("Date.php");
 
 class XML_Database implements DatabaseInterface {
    private $dom_root;
@@ -140,11 +141,11 @@ class XML_Database implements DatabaseInterface {
       return $res;
    }
    private function xml_to_avail($avail_xml, $hname) {
-      return new Availability((int) $avail_xml->room,
-                              (string) $avail_xml->date,
-                              (int) $avail_xml->bed,
-                              (int) $avail_xml->price,
-                              (string) $hname);
+      return array("room" => (int) $avail_xml->room,
+                   "date" => (string) $avail_xml->date,
+                   "bed"  =>(int) $avail_xml->bed,
+                   "price" => (int) $avail_xml->price,
+                   "hostel" => (string) $hname);
    }
 
    public function make_reservation($cust_id, $avail_id, $qty){
