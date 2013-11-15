@@ -1,5 +1,4 @@
 <?php
-require_once("Reservation.php");
 
 class Customer {
    protected $customer_id;

@@ -23,8 +23,6 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    public function testSearchEmpty() {
       $ret = $this->db->search_availability(null);
       $this->assertEmpty($ret);
-      $ret = $this->db->search_reservation(null);
-      $this->assertEmpty($ret);
    }
 
    public function testSearchEmptyAll() {
@@ -118,13 +116,36 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $rid = $this->db->make_reservation($cid, $aid, 1);
       $this->assertEquals(3, $this->db->get_available_space($aid));
+      $this->assertGreaterThan(0, $rid);
    }
+
+   public function testAddMultipleToReservation() {
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $rid = $this->db->make_reservation($cid, $aid, 1);
+      $rid2 = $this->db->make_reservation($cid, $aid2, 2, $rid);
+      $this->assertEquals($rid, $rid2);
+   }
+
    public function testCancelReservation(){
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $rid = $this->db->make_reservation($cid, $aid, 1);
       $this->db->delete_reservation($cid, $rid);
       $this->assertEquals(4, $this->db->get_available_space($aid));
+   }
+
+   public function testCancelReservation2(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $rid = $this->db->make_reservation($cid, $aid, 1);
+      $rid2 = $this->db->make_reservation($cid, $aid2, 2);
+      $this->assertFalse($rid == $rid2);
+      $this->db->delete_reservation($cid, $rid2);
+      $this->assertEquals(3, $this->db->get_available_space($aid));
+      $this->assertEquals(4, $this->db->get_available_space($aid2));
    }
 
    public function testDontCancelOtherUsersReservation(){
@@ -135,9 +156,18 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(3, $this->db->get_available_space($aid));
    }
    public function testGetReservation(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $rid = $this->db->make_reservation($cid, $aid, 2);
+      $res_info = $this->db->get_reservation($rid);
+      //$this->assertEquals( "20131111",  $res_info["check_in"]);
+      //$this->assertEquals( "Hostel 21",  $res_info["hostel"]);
+      //$this->assertEquals( 2,  $res_info["beds"]);
+      //$this->assertEquals( 50,  $res_info["price"]);
+      $this->assertEquals( $rid,  $res_info["id"]);
    }
 
-   public function get_revenue() {
+   public function testGetRevenue() {
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
@@ -146,6 +176,16 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(95, $this->db->get_revenue());
       $this->db->delete_reservation($cid, $rid);
       $this->assertEquals(70, $this->db->get_revenue());
+   }
+   public function testGetOccupancy() {
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $this->assertEquals(0, $this->db->get_occupancy());
+      $rid2 = $this->db->make_reservation($cid, $aid2, 2);
+      $this->assertEquals(0.25, $this->db->get_occupancy());
+      $rid = $this->db->make_reservation($cid, $aid, 4);
+      $this->assertEquals(0.75, $this->db->get_occupancy());
    }
 }
 

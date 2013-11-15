@@ -148,20 +148,31 @@ class XML_Database implements DatabaseInterface {
                    "hostel" => (string) $hname);
    }
 
-   public function make_reservation($cust_id, $avail_id, $qty){
+   private function get_reservation_by_id($res_id, $cust_id){
       $reservs = $this->dom_root->reservations;
-      $resv_record = $reservs->addChild("reservation");
+      if ($res_id != 0) {
+         foreach ($reservs->reservation as $resv){
+            if ($resv->id == $res_id and $cust_id == $resv->cust)
+               return $resv;
+         }
+      }
       $rid = (int)$reservs["next_id"];
       $reservs["next_id"] = $rid +1;
+      $resv_record = $reservs->addChild("reservation");
       $resv_record->addChild("id", $rid);
       $resv_record->addChild("cust", $cust_id);
-      $resv_record->addChild("avail", $avail_id);
-      $resv_record->addChild("qty", $qty);
+      return $resv_record;
+   }
+
+   public function make_reservation($cust_id, $avail_id, $qty, $rid = 0){
+      $resv_record = $this->get_reservation_by_id($rid, $cust_id);
+      $av_rec = $resv_record->addChild("avail", $avail_id);
+      $av_rec->addAttribute("qty", $qty);
 
       $this->avail = $this->get_availability_by_id($avail_id);
       $this->avail->bed -= $qty;
       $this->persist();
-      return $rid;
+      return (int) $resv_record->id;
    }
    public function delete_reservation($cust_id, $resv_id){
       $resv_dom = $this->dom_root->reservations;
@@ -169,26 +180,31 @@ class XML_Database implements DatabaseInterface {
       foreach ($resv_dom->reservation as $ind => $reservation) {
          $index++;
          if ($reservation->id == $resv_id and $reservation->cust == $cust_id) {
-            $this->avail = $this->get_availability_by_id($reservation->avail);
-            $this->avail->bed += $reservation->qty;
+            foreach ($reservation->avail as $item){
+               $this->avail = $this->get_availability_by_id($item);
+               $this->avail->bed += $item["qty"];
+            }
             unset ($this->dom_root->reservations->reservation[$index]);
             $this->persist();
             return;
          }
       }
    }
-   public function search_reservation($param){
+   public function get_reservation($resv_id){
       $resv_list = $this->dom_root->reservations;
       foreach ($resv_list->reservation as $reservation) {
-         if ($param["id"] != null and $param["id"] == $reservation->id) {
-            return array($this->xml_to_reservation($reservation));
+         if ($resv_id == $reservation->id) {
+            return $this->xml_to_reservation($reservation);
          }
       }
-      return array();
+      return null;
    }
 
    private function xml_to_reservation($resv) {
-      return new Reservation();
+      $avail = $this->get_availability_by_id($resv->avail);
+      $cust = $this->get_customer_info($resv->cust);
+      $resv_info["id"] = (int) $resv->id;
+      return $resv_info;
    }
 
    public function get_hostels($param){}
@@ -227,10 +243,38 @@ class XML_Database implements DatabaseInterface {
    public function get_revenue() {
       $revenue = 0;
       foreach ($this->dom_root->reservations->reservation as $reservation){
-         $unit_cost = $this->get_availability_by_id($reservation->avail)->price;
-         $revenue += $unit_cost * $reservation->qty;
+         foreach ($reservation->avail as $item){
+            $unit_cost = $this->get_availability_by_id($item)->price;
+            $revenue += $unit_cost * $item["qty"];
+         }
       }
       return $revenue;
+   }
+
+   private function total_available() {
+      $sum = 0;
+      foreach ($this->dom_root->hostels->hostel as $hostel){
+         foreach ($hostel->availabilities->availability as $avail){
+            $sum += (int) $avail->bed;
+         }
+      }
+      return $sum;
+   }
+   private function total_reserved() {
+      $sum = 0;
+      foreach ($this->dom_root->reservations->reservation as $resv) {
+         foreach ($resv->avail as $item){
+            $avail = $this->get_availability_by_id((int) $item);
+            $sum += (int) $item["qty"];
+         }
+      }
+      return $sum;
+   }
+   public function get_occupancy() {
+      $free = $this->total_available();
+      $reserved = $this->total_reserved();
+      $occupancy = $reserved / ($free + $reserved);
+      return $occupancy;
    }
 }
 ?>

@@ -1,6 +1,7 @@
 <?php
 
 require_once("../app/Admin.php");
+require_once("../app/Customer.php");
 require_once("../app/Search.php");
 
 #array_pop($argv);
@@ -40,7 +41,10 @@ function admin($args){
       $admin->load_hostel($args[3]);
    }
    else if ($cmd == "revenue") {
-     printf("Revenue: $%s\n\n", $admin->get_revenue());
+      printf("Revenue: $%s\n\n", $admin->get_revenue());
+   }
+   else if ($cmd == "occupancy"){
+      printf("Occupancy: %f%%\n", $admin->get_occupancy() *100);
    }
 }
 function user($args){

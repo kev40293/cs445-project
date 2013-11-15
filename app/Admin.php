@@ -35,7 +35,7 @@ class Admin {
       }
       $db = open_database();
       $cust = $db->add_customer($fname, $lname, $email, $cc_options);
-      return $cust->get_id();
+      return $cust;
    }
 
    public function change_user($user_id, $options=array()){
@@ -54,7 +54,8 @@ class Admin {
    }
 
    public function get_occupancy() {
-      return 0;
+      $db = open_database();
+      return $db->get_occupancy();
    }
 }
 
