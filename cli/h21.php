@@ -51,7 +51,7 @@ function user($args){
       $admin->change_user($opts['user_id'], $opts);
    }
    else if ($cmd == "view"){
-      $cinfo = $admin->get_customer_info($opts["user_id"]);
+      $cinfo = $admin->get_user_info($opts["user_id"]);
       print_user($cinfo);
    }
 }
@@ -75,12 +75,15 @@ function book($args){
    else if ($cmd == "view"){
       $customer = new Customer($opts["user_id"]);
       $resv_info = $customer->get_reservation_info($opts["book_id"]);
-      print_reservation();
+      print_reservation($resv_info);
    }
 }
 
 function print_user($user){
-   var_dump($user);
+   print "User: " . $user["id"] . "\n";
+   print "First Name: " . $user["first_name"] . "\n";
+   print "Last Name: " . $user["last_name"] . "\n";
+   print "Email: " . $user["email"] . "\n\n";
 }
 function print_reservation($reservation){
    var_dump($reservation);

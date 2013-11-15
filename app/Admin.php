@@ -43,6 +43,11 @@ class Admin {
       $db->update_customer($user_id, $options);
    }
 
+   public function get_user_info($cid) {
+      $db = open_database();
+      return $db->get_customer_info($cid);
+   }
+
    public function get_revenue() {
       return 0;
    }
