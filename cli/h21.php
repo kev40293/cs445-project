@@ -70,7 +70,10 @@ function book($args){
    }
    if ($cmd == "add"){
       $customer = new Customer($opts["user_id"]);
-      $res_id = $customer->make_reservation($opts["avail_id"], $opts["num_beds"]);
+      if (isset($opts["book_id"]))
+         $res_id = $customer->make_reservation($opts["avail_id"], $opts["num_beds"], $opts["book_id"]);
+      else
+         $res_id = $customer->make_reservation($opts["avail_id"], $opts["num_beds"]);
       if ($res_id < 0){
          print "Unable to make reservation\n";
       }
@@ -93,7 +96,16 @@ function print_user($user){
    print "Email: " . $user["email"] . "\n\n";
 }
 function print_reservation($reservation){
-   var_dump($reservation);
+   print "Booking ID: " . $reservation["id"] . "\n";
+   printf("Name: %s %s\n", $reservation["first_name"], $reservation["last_name"]);
+   foreach ($reservation["hostel"] as $hostel => $dates) {
+      print "$hostel\n";
+      foreach ($dates as $date => $qty) {
+         printf("   Date: %s\n", $date);
+         printf("      Number Beds: %d\n", $qty);
+      }
+   }
+   //var_dump($reservation);
 }
 function print_results($results){
    $hostels = array();

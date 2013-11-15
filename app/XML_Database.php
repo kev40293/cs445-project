@@ -212,6 +212,7 @@ class XML_Database implements DatabaseInterface {
       foreach ($resv->avail as $booking){
          $hostel_avail = $this->get_hostel_availability_pair_by_id($booking);
          $avail = $this->xml_to_avail($hostel_avail[1], $hostel_avail[0]);
+         $avail["qty"] = $booking["qty"];
          $resv_info["bookings"][] = $avail;
          $resv_info["price"] += $booking["qty"] * $avail["price"];
       }

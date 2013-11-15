@@ -163,6 +163,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals( 75,  $res_info["price"]);
       $this->assertEquals( $rid,  $res_info["id"]);
       $this->assertEquals("Greene", $res_info["last_name"]);
+      $this->assertEquals(3, (int)$res_info["bookings"][0]["qty"]);
    }
 
    public function testGetReservationMultiAvail(){
