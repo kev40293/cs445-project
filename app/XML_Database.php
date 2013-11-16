@@ -99,10 +99,12 @@ class XML_Database implements DatabaseInterface {
       return null;
    }
    private function get_availability_by_id($a_id) {
-      return $this->get_hostel_availability_pair_by_id($a_id)[1];
+      $x = ($this->get_hostel_availability_pair_by_id($a_id));
+      return $x[1];
    }
    private function get_hostel_for_availability_id($a_id) {
-      return $this->get_hostel_availability_pair_by_id($a_id)[0];
+      $x =($this->get_hostel_availability_pair_by_id($a_id));
+      return $x[0];
    }
    private function get_hostel_availability_pair_by_id($a_id) {
       $hostel_list = $this->dom_root->hostels;
@@ -113,6 +115,7 @@ class XML_Database implements DatabaseInterface {
             }
          }
       }
+      return array(null, 0);
    }
 
    public function get_available_space($avail_id) {
