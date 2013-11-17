@@ -9,7 +9,7 @@
 <?php
 require_once("../app/Admin.php");
 $admin = new Admin();
-$occupancy = $admin->get_occupancy();
+$occupancy = $admin->get_occupancy() * 100;
 $revenue = $admin->get_revenue();
 ?>
 
