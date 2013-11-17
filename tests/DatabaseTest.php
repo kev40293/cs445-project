@@ -35,7 +35,8 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $a_id = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $this->assertGreaterThan(0, $a_id);
       $space = $this->db->get_available_space($a_id);
-      $this->assertTrue($space == 4);
+      $this->assertEquals(4, $space);
+      $this->assertGreaterThan(0, $a_id);
    }
 
    public function testSearchAvailCity() {
@@ -68,6 +69,16 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
                       "city" => "Chicago");
       $results = $this->db->search_availability($search);
       $this->assertCount(2, $results);
+   }
+
+   public function testDateFormatAvail() {
+      $this->db->add_availability("Hostel 21", "20131112", 1, 4, 25);
+      $search = array("start_date" => "20131112",
+                      "end_date" => "20131112",
+                      "num" => 1,
+                      "city" => "Chicago");
+      $results = $this->db->search_availability($search);
+      $this->assertEquals("20131112", $results[1]['date']);
    }
 
    /*
@@ -166,6 +177,14 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(3, (int)$res_info["bookings"][0]["qty"]);
    }
 
+   public function testGetReservationDateFormat(){
+      $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
+      $aid = $this->db->add_availability("Hostel 21", "20131112", 1, 4, 25);
+      $rid = $this->db->make_reservation($cid, $aid, 3);
+      $res_info = $this->db->get_reservation($rid);
+      $this->assertEquals("20131112", $res_info['bookings'][0]['date']);
+   }
+
    public function testGetReservationMultiAvail(){
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
@@ -182,6 +201,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
       $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $this->assertEquals(0, $this->db->get_revenue());
       $rid = $this->db->make_reservation($cid, $aid, 1);
       $rid2 = $this->db->make_reservation($cid, $aid2, 2);
       $this->assertEquals(95, $this->db->get_revenue());

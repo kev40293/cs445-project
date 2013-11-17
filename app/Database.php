@@ -8,7 +8,7 @@ interface DatabaseInterface {
    public function update_customer($cust, $options);
    public function get_customer_info($cust_id);
 
-   public function add_availability($hostel, $rn, $d, $num, $price);
+   public function add_availability($hostel, $d, $rn, $num, $price);
    public function get_available_space($avail_id);
    public function search_availability($param);
 
@@ -103,17 +103,33 @@ class MemoryDatabase {
    private function persist() {
    }
 }
-
+/*
 require_once ("XML_Database.php");
+function open_database() {
+   $db = new XML_Database("db.xml");
+   if (file_exists("db.xml")) {
+      $db->open();
+   }else {
+      $db->init();
+   }
+   return $db;
+}
+function init_database() {
+   $db = new XML_Database("db.xml");
+   $db->init();
+   return $db;
+}
+*/
+require_once ("SQL_Database.php");
 
 function open_database(){
-   $db = new XML_Database("db.xml");
+   $db = new SQL_Database();
    $db->open();
    return $db;
 }
 
 function init_database(){
-   $db = new XML_Database("db.xml");
+   $db = new SQL_Database();
    $db->init();
    return $db;
 }
