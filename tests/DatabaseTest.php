@@ -133,10 +133,13 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    public function testAddMultipleToReservation() {
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
-      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
+      $aid2 = $this->db->add_availability("Hostel 21", "20131112", 2, 4, 35);
       $rid = $this->db->make_reservation($cid, $aid, 1);
       $rid2 = $this->db->make_reservation($cid, $aid2, 2, $rid);
       $this->assertEquals($rid, $rid2);
+      $res_info = $this->db->get_reservation($rid);
+      $this->assertNotEquals($res_info['bookings'][0]['id'], 
+         $res_info['bookings'][1]['id']);
    }
 
    public function testCancelReservation(){
@@ -145,6 +148,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $rid = $this->db->make_reservation($cid, $aid, 1);
       $this->db->delete_reservation($cid, $rid);
       $this->assertEquals(4, $this->db->get_available_space($aid));
+      $this->assertNull($this->db->get_reservation($rid));
    }
 
    public function testCancelReservation2(){

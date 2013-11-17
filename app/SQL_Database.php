@@ -189,19 +189,22 @@ class SQL_Database {
       $stmt->bind_param('i', $res_id);
       $stmt->execute();
 
-      $result = array("id" => $res_id, "price" => 0, 'avail' => array());
+      $result = array("id" => $res_id, "price" => 0 );
       $stmt->bind_result(
          $result['first_name'], $result['last_name'], $quantity,
          $avail['id'], $avail['room'], $avail['date'], $avail['bed'], $avail['price'],
          $avail['hostel']);
       while ($stmt->fetch() != null) {
-         $avail['qty'] = $quantity;
-         $avail['date'] =
-            date_format(date_create_from_format('Y-m-d', $avail['date'], new DateTimeZone('UTC')), 'Ymd');
-         $result['bookings'][] = $avail;
-         $result['price'] += $avail['price'] * $avail['qty'];
+         $av['qty'] = $quantity;
+         foreach ($avail as $key => $val) {
+            $av[$key] = $val;
+         }
+         $av['date'] =
+            date_format(date_create_from_format('Y-m-d', $av['date'], new DateTimeZone('UTC')), 'Ymd');
+         $result['bookings'][] = $av;
+         $result['price'] += $av['price'] * $av['qty'];
       }
-      return $result;
+      return (isset($result['bookings']) ? $result : null);
    }
 
    public function get_hostels($param){}
