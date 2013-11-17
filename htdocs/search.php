@@ -76,7 +76,7 @@ function print_results($results){
    }
 }
 ?>
-<form method="POST">
+<form method="POST" action="book.php">
 <?php print_results($results); ?>
 Customer ID: <input type="text" name="customer_id">
 <input type="submit" value="Book">

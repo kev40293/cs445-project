@@ -77,6 +77,10 @@ function book($args){
       if ($res_id < 0){
          print "Unable to make reservation\n";
       }
+      else {
+         $resv_info = $customer->get_reservation_info($opts["book_id"]);
+         print_reservation($resv_info);
+      }
    }
    else if ($cmd == "cancel"){
       $customer = new Customer($opts["user_id"]);
