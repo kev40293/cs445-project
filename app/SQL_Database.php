@@ -125,8 +125,12 @@ class SQL_Database {
          $res['id'], $res['room'], $res['date'], $res['bed'], $res['price'], $res['hostel']
       );
       while (mysqli_stmt_fetch($stmt) != null) {
-         $res['date'] = date_format(date_create_from_format('Y-m-d', $res['date'], new DateTimeZone('UTC')), 'Ymd');
-         $result[$res['id']] = $res;
+         $res_copy = array();
+         foreach ($res as $key => $val){
+            $res_copy[$key] = $val;
+         }
+         $res_copy['date'] = date_format(date_create_from_format('Y-m-d', $res_copy['date'], new DateTimeZone('UTC')), 'Ymd');
+         $result[$res_copy['id']] = $res_copy;
       }
       $stmt->close();
       return $result;

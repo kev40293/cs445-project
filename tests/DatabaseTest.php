@@ -58,6 +58,15 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
                       "city" => null);
       $results = $this->db->search_availability($search);
       $this->assertCount(2, $results);
+      $this->assertNotEquals($results[1]['id'], $results[2]['id']);
+   }
+
+   public function testSearchAvailMultDays() {
+      $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
+      $this->db->add_availability("Hostel 21", "20131112", 2, 2, 25);
+      $search = search_object();
+      $results = $this->db->search_availability($search);
+      $this->assertCount(2, $results);
    }
 
    public function testSearchCity() {
