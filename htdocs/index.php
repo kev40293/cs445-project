@@ -2,6 +2,11 @@
 <head>
 </head>
 <body>
-Under Construction
+<?php
+include("banner.php");
+include("searchform.php");
+?>
+
+
 </body>
 </html>
