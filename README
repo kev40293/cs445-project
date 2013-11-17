@@ -7,9 +7,42 @@
 
 Set up instructions
 -------------------
-apt-get update # to make sure archives are fresh
-apt-get install phpunit
+sudo ./install.sh
 
-pear update-channels
-pear isntall PHP_CodeCoverage
-pear install phpunit
+Running Instructions
+--------------------
+command line interface:
+cd cli/
+
+to search reservations
+php h21.php search [--start_date --end_date --city]
+
+To book a reservation
+php h21.php book add --user_id --avail_id [--book_id]
+
+To cancel a reservation
+php h21.php book cancel --user_id --book_id
+
+To view a reservation
+php h21.php book view --user_id --book_id
+
+to add a user
+php h21.php user add --first_name --last_name --email [--cc_number --expiration_date
+                     --security_code --phone]
+
+to change user
+php h21.php user change --user_id --first_name --last_name --email
+               [--cc_number --expiration_date --security_code --phone]
+
+to view user
+php h21.php view --user_id
+
+to view occupancy/revenue
+php h21.php admin revenue|occupancy
+
+to load hostel file
+php h21.php load xml_file
+
+
+Web interface
+Open browser, go to localhost in the url bar
