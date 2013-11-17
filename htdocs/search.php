@@ -82,8 +82,5 @@ Customer ID: <input type="text" name="customer_id">
 <input type="submit" value="Book">
 </form>
 
-<?php
-var_dump($_POST);
-?>
 </body>
 </html>

@@ -18,5 +18,6 @@ $revenue = $admin->get_revenue();
 
 <?php include("lookup_user.php"); ?>
 <?php include("add_user_form.php"); ?>
+<?php include("load_hostel.php"); ?>
 </body>
 </head>
