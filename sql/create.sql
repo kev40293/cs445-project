@@ -44,7 +44,7 @@ create table Reservations(
    avail_id integer not null,
    customer_id integer not null,
    quantity integer not null,
-   primary key (id),
+   primary key (id, avail_id, customer_id),
    foreign key (customer_id) references Customer(id),
    foreign key (avail_id) references Availability(id),
    check (quantity > 0)
