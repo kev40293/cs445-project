@@ -160,7 +160,6 @@ class SQL_Database {
       return $res_id;
    }
    public function delete_reservation($cust_id, $resv_id){
-      $this->dbconn->begin_transaction();
       $count_stmt = $this->dbconn->prepare("select quantity, avail_id from Reservations ".
          "where id = ? and customer_id = ?");
       $count_stmt->bind_param("ii", $resv_id, $cust_id);
@@ -180,7 +179,6 @@ class SQL_Database {
       $update_stmt->bind_param("ii", $qty, $avail);
       $update_stmt->execute();
       $update_stmt->close();
-      $this->dbconn->commit();
    }
    public function get_reservation($res_id){
       $stmt = $this->dbconn->prepare(

@@ -10,8 +10,7 @@ create table Customer (
 );
 
 create table Hostels (
-   id integer primary key auto_increment,
-   name varchar(200) not null unique,
+   name varchar(200) primary key,
    phone varchar(20),
    email varchar(100),
    facebook varchar(100),
@@ -33,8 +32,8 @@ create table Availability (
    room_number integer not null,
    beds integer not null,
    price integer not null,
-   hostel_id integer not null,
-   foreign key (hostel_id) references Hostels(id),
+   hostel varchar(200) not null,
+   foreign key (hostel) references Hostels(name),
    check (beds >= 0 and price > 0)
 );
 
