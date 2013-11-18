@@ -52,7 +52,9 @@ function user($args){
    $admin = new Admin();
    $opts = pair_args($args, 3);
    if ($cmd == "add"){
-      $admin->create_user($opts['first_name'], $opts['last_name'], $opts["email"], $opts);
+      $id = $admin->create_user($opts['first_name'], $opts['last_name'], $opts["email"], $opts);
+      $cinfo = $admin->get_user_info($id);
+      print_user($cinfo);
    }
    else if ($cmd == "change") {
       $admin->change_user($opts['user_id'], $opts);

@@ -60,7 +60,7 @@ class SQL_Database {
          "from Customer where id=?;");
       $stmt->bind_param("i", $cust_id);
       $stmt->execute();
-      $res = array();
+      $res = array('id' => $cust_id);
       $stmt->bind_result(
          $res['first_name'], $res['last_name'], $res['email'], 
          $res['cc_number'], $res['expiration_date'],
