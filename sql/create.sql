@@ -23,8 +23,10 @@ create table Hostels (
    city varchar(100),
    state varchar(100),
    postal_code varchar(10),
-   country varchar(10)
-   --revenue integer default 0
+   country varchar(10),
+   cancellation_deadline integer default 0,
+   cancellation_penalty integer default 0,
+   revenue double default 0
 );
 
 create table Availability (

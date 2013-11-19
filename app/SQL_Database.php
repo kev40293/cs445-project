@@ -209,22 +209,57 @@ class SQL_Database {
       return (isset($result['bookings']) ? $result : null);
    }
 
-   public function get_hostels($param){}
+   public function pay_for_availability($a_id, $qty){
+      $stmt = $this->dbconn->prepare(
+         "update Availability a join Hostels h " .
+         "set h.revenue = h.revenue + a.price * ? " .
+         "where a.id = ? ;");
+      $stmt->bind_param("ii", $qty, $a_id);
+      $stmt->execute();
+      $stmt->close();
+   }
+   public function refund_availability($a_id, $qty, $penalty=0){
+      $stmt = $this->dbconn->prepare(
+         "update Availability a join Hostels h " .
+         "set h.revenue = h.revenue - a.price * ? " .
+         "where a.id = ? ;");
+      $ratio = $qty * (1-$penalty);
+      $stmt->bind_param("ii", $ratio, $a_id);
+      $stmt->execute();
+      $stmt->close();
+   }
+   public function get_hostel_restrictions($hostel_name){
+      $stmt = $this->dbconn->prepare(
+         "select check_in_time, check_out_time, smoking, alcohol, " .
+         "cancellation_deadline, cancellation_penalty from Hostels ".
+         "where name = ?;");
+      $stmt->bind_param("s", $hostel_name);
+      $stmt->execute();
+      $stmt->bind_result(
+         $rest['check_in_time'], $rest['check_out_time'], 
+         $rest['smoking'], $rest['alcohol'],
+         $rest['cancellation_deadline'], $rest['cancellation_penalty']);
+      $stmt->fetch();
+      $stmt->close();
+      return $rest;
+   }
    public function add_hostel($name, $address, $contact, $restrict){
       $stmt = $this->dbconn->prepare(
          "insert into Hostels " .
          "(name, phone, email, facebook, web, check_in_time, check_out_time, ".
-         "smoking, alcohol, street, city, state, postal_code, country)" .
-         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+         "smoking, alcohol, street, city, state, postal_code, country, " .
+         "cancellation_deadline, cancellation_penalty)" .
+         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?);");
       $smoke = ($restrict->smoking == "Y" ? 1 : 0);
       $alc = ($restrict->alcohol == "Y" ? 1 : 0);
-      $stmt->bind_param("sssssssiisssss",
+      $stmt->bind_param("sssssssiisssssii",
          $name,
          $contact->phone, $contact->email, $contact->facebook, $contact->web,
          $restrict->check_in_time, $restrict->check_out_time,
          $smoke, $alc,
          $address->street, $address->city, $address->state,
-         $address->postal_code, $address->country);
+         $address->postal_code, $address->country,
+         $restrict->cancellation_deadline, $restrict->cancellation_penalty);
 
       $stmt->execute();
       $stmt->close();
@@ -233,9 +268,7 @@ class SQL_Database {
 
    public function get_revenue(){
       $res = $this->dbconn->query(
-         "select sum(price * quantity) as revenue from " .
-         "Reservations join Availability ".
-         "where Reservations.avail_id = Availability.id;");
+         "select sum(revenue) from Hostels; ");
       $row = mysqli_fetch_row($res);
       return $row[0];
    }
@@ -278,7 +311,10 @@ create table Hostels (
    city varchar(100),
    state varchar(100),
    postal_code varchar(10),
-   country varchar(10)
+   country varchar(10),
+   cancellation_deadline integer default 0,
+   cancellation_penalty integer default 0,
+   revenue double default 0
 );";
 
 $availability_table = "

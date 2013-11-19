@@ -22,11 +22,11 @@ class Customer {
    }
 
    public function cancel_reservation($reservation_id) {
-      // Cancelation policy handled here
-      // To determine if money should be subtracted
       $db = open_database();
       $res_info = $db->get_reservation($reservation_id);
       foreach ($res_info['bookings'] as $hostel => $resv){
+         // Cancelation policy handled here
+         // To determine if money should be subtracted
          $db->refund_availability($resv['id'], $resv['qty']);
       }
       $db->delete_reservation($this->customer_id, $reservation_id);

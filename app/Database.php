@@ -105,6 +105,7 @@ class MemoryDatabase {
    private function persist() {
    }
 }
+/*
 require_once ("XML_Database.php");
 function open_database() {
    $db = new XML_Database("db.xml");
@@ -120,7 +121,7 @@ function init_database() {
    $db->init();
    return $db;
 }
-/*
+*/
 require_once ("SQL_Database.php");
 
 function open_database(){
@@ -134,6 +135,5 @@ function init_database(){
    $db->init();
    return $db;
 }
- */
 
 ?>
