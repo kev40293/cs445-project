@@ -151,7 +151,8 @@ class XML_Database implements DatabaseInterface {
       return $res;
    }
    private function xml_to_avail($avail_xml, $hname) {
-      return array("room" => (int) $avail_xml->room,
+      return array("id" => $avail_xml->id,
+                   "room" => (int) $avail_xml->room,
                    "date" => (string) $avail_xml->date,
                    "bed"  =>(int) $avail_xml->bed,
                    "price" => (int) $avail_xml->price,
