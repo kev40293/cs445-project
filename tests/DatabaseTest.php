@@ -213,13 +213,11 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
    public function testGetRevenue() {
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
       $aid = $this->db->add_availability("Hostel 21", "20131111", 1, 4, 25);
-      $aid2 = $this->db->add_availability("Hostel 21", "20131111", 2, 4, 35);
-      $this->assertEquals(0, $this->db->get_revenue());
       $rid = $this->db->make_reservation($cid, $aid, 1);
-      $rid2 = $this->db->make_reservation($cid, $aid2, 2);
-      $this->assertEquals(95, $this->db->get_revenue());
-      $this->db->delete_reservation($cid, $rid);
-      $this->assertEquals(70, $this->db->get_revenue());
+      $this->db->pay_for_availability($aid, 2);
+      $this->assertEquals(50, $this->db->get_revenue());
+      $this->db->refund_availability($aid, 2);
+      $this->assertEquals(0, $this->db->get_revenue());
    }
    public function testGetOccupancy() {
       $cid = $this->db->add_customer("John", "Greene", "nothing@me.com", array());
@@ -230,6 +228,16 @@ class DatabaseTest extends PHPUnit_Framework_TestCase {
       $this->assertEquals(0.25, $this->db->get_occupancy());
       $rid = $this->db->make_reservation($cid, $aid, 4);
       $this->assertEquals(0.75, $this->db->get_occupancy());
+   }
+
+   public function testGetRestriction(){
+      $restrict = default_restrictions();
+      $restrict->cancellation_deadline = 48;
+      $hostel = $this->db->add_hostel("Hostel 25", default_address(),
+         default_contact(), $restrict);
+      $ret = $this->db->get_hostel_restrictions("Hostel 25");
+      $this->assertNotEmpty($ret);
+      $this->assertEquals(48, $ret['cancellation_deadline']);
    }
 }
 

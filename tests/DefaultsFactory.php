@@ -16,6 +16,8 @@ function default_restrictions() {
    $rest->addChild("check_out_time");
    $rest->addChild("smoking");
    $rest->addChild("alcohol");
+   $rest->addChild("cancellation_deadline");
+   $rest->addChild("cancellation_penalty");
    return $rest;
 }
 

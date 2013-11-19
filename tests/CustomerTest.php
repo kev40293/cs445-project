@@ -23,6 +23,7 @@ class CustomerTest extends PHPUnit_Framework_TestCase {
       $rid = $this->customer->make_reservation($this->avail_id, 1);
       $this->assertGreaterThan(0, $rid);
       $res = $this->customer->get_reservation_info($rid);
+      //var_dump($res);
       $this->assertCount(1, $res["hostel"]);
       $this->assertEquals(1 , $res['hostel']['Hostel 21']['20131111']);
    }
@@ -49,6 +50,15 @@ class CustomerTest extends PHPUnit_Framework_TestCase {
       $res_info = $this->customer->get_reservation_info($rid);
       $this->assertEquals(null, $res_info);
 
+   }
+
+   public function testUpdatingRevenue() {
+      $rid = $this->customer->make_reservation($this->avail_id, 1);
+      $db = open_database();
+      $this->assertEquals(25, $db->get_revenue());
+      $this->customer->cancel_reservation($rid);
+      $db = open_database();
+      $this->assertEquals(0, $db->get_revenue());
    }
 }
 

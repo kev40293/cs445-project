@@ -104,14 +104,14 @@ class XML_Database implements DatabaseInterface {
    }
    private function get_hostel_for_availability_id($a_id) {
       $x =($this->get_hostel_availability_pair_by_id($a_id));
-      return $x[0];
+      return (string)($x[0]->name);
    }
    private function get_hostel_availability_pair_by_id($a_id) {
       $hostel_list = $this->dom_root->hostels;
       foreach ($hostel_list->hostel as $hostel) {
          foreach ($hostel->availabilities->availability as $avail){
             if ((int)$avail->id == $a_id) {
-               return array((string)$hostel->name , $avail);
+               return array($hostel , $avail);
             }
          }
       }
@@ -122,7 +122,7 @@ class XML_Database implements DatabaseInterface {
       $avail = $this->get_availability_by_id($avail_id);
       return (int) $avail->bed;
    }
-   public function update_available_space($avail_id, $qty){
+   private function update_available_space($avail_id, $qty){
       $avail = $this->get_availability_by_id($avail_id);
       $avail->bed[0] = $qty;
       $this->persist();
@@ -151,7 +151,7 @@ class XML_Database implements DatabaseInterface {
       return $res;
    }
    private function xml_to_avail($avail_xml, $hname) {
-      return array("id" => $avail_xml->id,
+      return array("id" => (int) $avail_xml->id,
                    "room" => (int) $avail_xml->room,
                    "date" => (string) $avail_xml->date,
                    "bed"  =>(int) $avail_xml->bed,
@@ -215,8 +215,8 @@ class XML_Database implements DatabaseInterface {
       $resv_info["price"] = 0;
       foreach ($resv->avail as $booking){
          $hostel_avail = $this->get_hostel_availability_pair_by_id($booking);
-         $avail = $this->xml_to_avail($hostel_avail[1], $hostel_avail[0]);
-         $avail["qty"] = $booking["qty"];
+         $avail = $this->xml_to_avail($hostel_avail[1], $hostel_avail[0]->name);
+         $avail["qty"] = (int)$booking["qty"];
          $resv_info["bookings"][] = $avail;
          $resv_info["price"] += $booking["qty"] * $avail["price"];
       }
@@ -227,7 +227,40 @@ class XML_Database implements DatabaseInterface {
       return $resv_info;
    }
 
-   public function get_hostels($param){}
+   private function get_hostel_by_name($hostel_name){
+      $hostel_dom = $this->dom_root->hostels;
+      foreach ($hostel_dom->hostel as $hostels) {
+         if ($hostels->name == $hostel_name){
+            return $hostels;
+         }
+      }
+   }
+   public function pay_for_availability($a_id, $qty) {
+      $host_avail = $this->get_hostel_availability_pair_by_id($a_id);
+      $host_avail[0]->revenue += ((int)$host_avail[1]->price) * $qty;
+      $this->persist();
+   }
+
+   public function refund_availability($a_id, $qty, $penalty=0){
+      $host_avail = $this->get_hostel_availability_pair_by_id($a_id);
+      $penalty_cost = $host_avail[1]->price * $qty * $penalty;
+      $host_avail[0]->revenue -= ($host_avail[1]->price * $qty - $penalty_cost);
+      $this->persist();
+   }
+
+   public function get_hostel_restrictions($hostel_name){
+      $hostels = $this->get_hostel_by_name($hostel_name);
+      if ($hostels == null)
+         return array();
+      $restrict = $hostels->restrictions;
+      return array(
+         "check_in_time" => (string)$restrict->check_in_time,
+         "check_out_time" =>  (string)$restrict->check_out_time,
+         "smoking" =>  (string)$restrict->smoking,
+         "alchohol" =>  (string)$restrict->alcohol,
+         "cancellation_deadline" =>  (int)$restrict->cancellation_deadline,
+         "cancellation_penalty" =>  (string)$restrict->cancellation_penalty);
+   }
    public function add_hostel($name, $address, $contact, $restrict){
       $hostel_dom = $this->dom_root->hostels;
       $hostel = $hostel_dom->addChild("hostel");
@@ -245,6 +278,9 @@ class XML_Database implements DatabaseInterface {
       $restrictions->addChild("check_out_time", $restrict->check_out_time);
       $restrictions->addChild("smoking", $restrict->smoking);
       $restrictions->addChild("alchohol", $restrict->alcohol);
+      $restrictions->addChild("cancellation_deadline", $restrict->cancellation_deadline);
+      $restrictions->addChild("cancellation_penalty", $restrict->cancellation_penalty);
+      $hostel->addChild("revenue", 0);
 
       $add = $hostel->addChild("address");
       $add->addChild("street", $address->street);
@@ -262,11 +298,8 @@ class XML_Database implements DatabaseInterface {
 
    public function get_revenue() {
       $revenue = 0;
-      foreach ($this->dom_root->reservations->reservation as $reservation){
-         foreach ($reservation->avail as $item){
-            $unit_cost = $this->get_availability_by_id($item)->price;
-            $revenue += $unit_cost * $item["qty"];
-         }
+      foreach($this->dom_root->hostels->hostel as $hostel) {
+         $revenue += (int) $hostel->revenue;
       }
       return $revenue;
    }

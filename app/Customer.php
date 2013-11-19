@@ -15,6 +15,7 @@ class Customer {
       $space = $db->get_available_space($availability_id);
       if ($qty <= $space) {
          // Add money to hostel
+         $db->pay_for_availability($availability_id, $qty);
          return $db->make_reservation($this->customer_id, $availability_id, $qty, $bid);
       }
       return -1;
@@ -24,6 +25,10 @@ class Customer {
       // Cancelation policy handled here
       // To determine if money should be subtracted
       $db = open_database();
+      $res_info = $db->get_reservation($reservation_id);
+      foreach ($res_info['bookings'] as $hostel => $resv){
+         $db->refund_availability($resv['id'], $resv['qty']);
+      }
       $db->delete_reservation($this->customer_id, $reservation_id);
    }
 

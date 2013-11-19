@@ -16,7 +16,9 @@ interface DatabaseInterface {
    public function delete_reservation($cust_id, $resv_id);
    public function get_reservation($res_id);
 
-   public function get_hostels($param);
+   public function pay_for_availability($a_id, $qty);
+   public function refund_availability($a_id, $qty, $penalty=0);
+   public function get_hostel_restrictions($hostel_name);
    public function add_hostel($name, $address, $contact, $restrict);
 
    public function get_revenue();
