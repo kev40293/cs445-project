@@ -123,7 +123,6 @@ function init_database() {
 }
 */
 require_once ("SQL_Database.php");
-
 function open_database(){
    $db = new SQL_Database();
    $db->open();

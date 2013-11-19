@@ -253,13 +253,14 @@ class XML_Database implements DatabaseInterface {
       if ($hostels == null)
          return array();
       $restrict = $hostels->restrictions;
+      //var_dump($restrict);
       return array(
          "check_in_time" => (string)$restrict->check_in_time,
          "check_out_time" =>  (string)$restrict->check_out_time,
          "smoking" =>  (string)$restrict->smoking,
          "alchohol" =>  (string)$restrict->alcohol,
          "cancellation_deadline" =>  (int)$restrict->cancellation_deadline,
-         "cancellation_penalty" =>  (string)$restrict->cancellation_penalty);
+         "cancellation_penalty" =>  (int)$restrict->cancellation_penalty);
    }
    public function add_hostel($name, $address, $contact, $restrict){
       $hostel_dom = $this->dom_root->hostels;

@@ -114,8 +114,10 @@ class SQL_Database {
       }
 
       $cond_str = "where " . implode (" and ", $conditions);
-      $stmt = $this->dbconn->prepare("select id, room_number, av_date, beds, price, hostel " .
-         "from Availability join Hostels $cond_str;");
+      $stmt = $this->dbconn->prepare(
+         "select id, room_number, av_date, beds, price, hostel " .
+         "from Availability join Hostels on " .
+         "Availability.hostel = Hostels.name $cond_str;");
       array_unshift($args, $bind_arg);
       call_user_func_array(array($stmt, 'bind_param'),$args);
       $stmt->execute();
@@ -183,11 +185,12 @@ class SQL_Database {
    public function get_reservation($res_id){
       $stmt = $this->dbconn->prepare(
          "select first_name, last_name, quantity, " .
-         "Availability.id, room_number, av_date, beds, price, hostel from " .
-         "Reservations left join Availability on " .
-         " Availability.id = Reservations.avail_id " .
-         "join Hostels join Customer " .
-         "where Reservations.id = ?");
+         "a.id, room_number, av_date, beds, price, hostel from " .
+         "Reservations r left join Availability a on " .
+         " a.id = r.avail_id " .
+         "join Hostels h on h.name = a.hostel join Customer c " .
+         "on c.id = r.customer_id " .
+         "where r.id = ?");
       $stmt->bind_param('i', $res_id);
       $stmt->execute();
 
@@ -212,6 +215,7 @@ class SQL_Database {
    public function pay_for_availability($a_id, $qty){
       $stmt = $this->dbconn->prepare(
          "update Availability a join Hostels h " .
+         "on a.hostel = h.name " .
          "set h.revenue = h.revenue + a.price * ? " .
          "where a.id = ? ;");
       $stmt->bind_param("ii", $qty, $a_id);
@@ -221,10 +225,11 @@ class SQL_Database {
    public function refund_availability($a_id, $qty, $penalty=0){
       $stmt = $this->dbconn->prepare(
          "update Availability a join Hostels h " .
-         "set h.revenue = h.revenue - a.price * ? " .
+         "on a.hostel = h.name " .
+         "set h.revenue = h.revenue - (a.price * ?) " .
          "where a.id = ? ;");
       $ratio = $qty * (1-$penalty);
-      $stmt->bind_param("ii", $ratio, $a_id);
+      $stmt->bind_param("di", $ratio, $a_id);
       $stmt->execute();
       $stmt->close();
    }

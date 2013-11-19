@@ -60,6 +60,22 @@ class CustomerTest extends PHPUnit_Framework_TestCase {
       $db = open_database();
       $this->assertEquals(0, $db->get_revenue());
    }
+
+   public function testCancelAfterDeadline() {
+      $deadline = default_restrictions();
+      $deadline->check_in_time = "13:00";
+      $deadline->check_out_time = "10:00";
+      $deadline->cancellation_deadline = 48;
+      $deadline->cancellation_penalty = 40;
+      $db = open_database();
+      $hostel2 = $db->add_hostel("Hostel 25", default_address(),
+         default_contact(), $deadline);
+      $aid = $db->add_availability("Hostel 25", "20131120", 1, 4, 100);
+      $rid = $this->customer->make_reservation($aid, 1);
+      $this->customer->cancel_reservation($rid);
+      $db = open_database();
+      $this->assertEquals(40, $db->get_revenue());
+   }
 }
 
 ?>
