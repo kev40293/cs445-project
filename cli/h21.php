@@ -81,7 +81,7 @@ function book($args){
          print "Unable to make reservation\n";
       }
       else {
-         $resv_info = $customer->get_reservation_info($res_id]);
+         $resv_info = $customer->get_reservation_info($res_id);
          print_reservation($resv_info);
       }
    }
