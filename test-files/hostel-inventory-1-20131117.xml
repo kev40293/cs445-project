@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<hostel>
+	<name>Hostel 21 - Romantic</name>
+	<address>
+		<street>424 Clay St</street>
+		<city>San Francisco</city>
+		<state>California</state>
+		<postal_code>94111</postal_code>
+		<country>USA</country>
+	</address>
+	<contact>
+		<phone>+1-555-555-5555</phone>
+		<email>romantic@hostel21.com</email>
+		<facebook>hostel21-romantic</facebook>
+		<web>romantic.hostel21.com</web>
+	</contact>
+	<restrictions>
+		<check_in_time>14:00</check_in_time>
+		<check_out_time>11:00</check_out_time>
+		<smoking>N</smoking>
+		<alcohol>N</alcohol>
+		<cancellation_deadline>48</cancellation_deadline>
+		<cancellation_penalty>75%</cancellation_penalty>
+	</restrictions>
+	<availability>
+		<date>20140701</date>
+		<room>1</room>
+		<bed>1</bed>
+		<price>10</price>
+	</availability>
+	<availability>
+		<date>20140701</date>
+		<room>1</room>
+		<bed>2</bed>
+		<price>12</price>
+	</availability>
+	<availability>
+		<date>20140701</date>
+		<room>2</room>
+		<bed>3</bed>
+		<price>20</price>
+	</availability>
+	<availability>
+		<date>20140702</date>
+		<room>1</room>
+		<bed>1</bed>
+		<price>10</price>
+	</availability>
+	<availability>
+		<date>20140702</date>
+		<room>1</room>
+		<bed>2</bed>
+		<price>12</price>
+	</availability>
+	<availability>
+		<date>20140702</date>
+		<room>2</room>
+		<bed>3</bed>
+		<price>25</price>
+	</availability>
+	<availability>
+		<date>20140703</date>
+		<room>1</room>
+		<bed>1</bed>
+		<price>10</price>
+	</availability>
+	<availability>
+		<date>20140703</date>
+		<room>1</room>
+		<bed>2</bed>
+		<price>15</price>
+	</availability>
+	<availability>
+		<date>20140703</date>
+		<room>2</room>
+		<bed>3</bed>
+		<price>30</price>
+	</availability>
+	<availability>
+		<date>20140704</date>
+		<room>1</room>
+		<bed>1</bed>
+		<price>14</price>
+	</availability>
+	<availability>
+		<date>20140704</date>
+		<room>1</room>
+		<bed>2</bed>
+		<price>15</price>
+	</availability>
+	<availability>
+		<date>20140704</date>
+		<room>2</room>
+		<bed>3</bed>
+		<price>30</price>
+	</availability>
+</hostel>
+		
+		
+
