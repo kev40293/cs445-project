@@ -9,6 +9,11 @@ Set up instructions
 -------------------
 sudo ./install.sh
 
+Unit Test Instructions
+----------------------
+cd tests
+phpunit
+
 Running Instructions
 --------------------
 command line interface:
