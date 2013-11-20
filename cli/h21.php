@@ -72,6 +72,7 @@ function book($args){
    }
    if ($cmd == "add"){
       $customer = new Customer($opts["user_id"]);
+      $res_id = 0;
       if (isset($opts["book_id"]))
          $res_id = $customer->make_reservation($opts["avail_id"], $opts["num_beds"], $opts["book_id"]);
       else
@@ -80,7 +81,7 @@ function book($args){
          print "Unable to make reservation\n";
       }
       else {
-         $resv_info = $customer->get_reservation_info($opts["book_id"]);
+         $resv_info = $customer->get_reservation_info($res_id]);
          print_reservation($resv_info);
       }
    }
